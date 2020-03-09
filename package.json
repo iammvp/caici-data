@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/iammvp/caici-data/issues"
   },
-  "homepage": "https://github.com/iammvp/caici-data#readme"
+  "homepage": "https://github.com/iammvp/caici-data#readme",
+  "dependencies": {
+    "inquirer": "^7.0.6"
+  }
 }
