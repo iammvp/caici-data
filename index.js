@@ -1,6 +1,9 @@
 'use strict';
 const fs = require('fs');
 const inquirer = require('inquirer');
+const imagemin = require('imagemin');
+const imageminJpegtran = require('imagemin-jpegtran');
+const imageminPngquant = require('imagemin-pngquant');
 const raw = require('./data.json');
 const data = raw.data;
 console.log(`当前词汇量: ${data[0].words.length}个, 类型: ${data.length}种`);
@@ -22,8 +25,16 @@ const firstPrompt = {
       value: 'delete'
     },
     {
-      name: '生成压缩文件',
+      name: '压缩json文件',
       value: 'compress'
+    },
+    {
+      name: '压缩图片文件',
+      value: 'compress-image'
+    },
+    {
+      name: '退出',
+      value: 'exit'
     }
   ]
 };
@@ -53,6 +64,45 @@ inquirer.prompt(firstPrompt).then(answer => {
     inquirer.prompt({...typeSelectPrompt, name: 'add', message: '增加哪个类型?'}).then( addPromptAnser => {
       addWords(addPromptAnser.add)
     })
+  } else if(answer.firt === 'delete') {
+    fs.readFile('./files/delete.txt', 'utf8', (err, content) => {
+      if(err) {
+        console.log('读取删除词汇失败');
+      } else {
+        const str = content.trim();
+        if(str === '') {
+          console.log('删除词汇为空');
+        } else {
+          inquirer.prompt({...confirmPrompt, name: 'deleteConfirm', message: `确定删除${str.substr(0, 20) + '...'} 等词语?`}).then(confirmAnswer => {
+            if(confirmAnswer.deleteConfirm === true) {
+              savePrevData().then(() => {
+                const tempArray = str.split(' ');
+                tempArray.forEach(v => {
+                  deleteWord(v);
+                });
+                generateFile();
+                wipeUsedFile('./files/delete.txt');
+              });
+            }
+          });
+        }
+      }
+    })
+  } else if (answer.first === 'compress-image') {
+    (async () => {
+      const files = await imagemin(['images/*.{jpg,png}'], {
+          destination: 'images/min',
+          plugins: [
+              imageminJpegtran(),
+              imageminPngquant({
+                  quality: [0.6, 0.8]
+              })
+          ]
+      });
+      console.log('图片压缩完成');
+    })();
+  } else {
+    process.exit();
   }
 });
 
@@ -98,6 +148,16 @@ function addWords(index) {
           }
         })
       }
+    }
+  })
+}
+
+function deleteWord(word) {
+  data.forEach(v => {
+    const index = v.words.findIndex(w => w === word);
+    if(index !== -1) {
+      v.words.splice(index, 1);
+      console.log(`${v.title}中找到词汇 ${word}, 删除成功`);
     }
   })
 }
