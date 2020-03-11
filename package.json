@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/iammvp/caici-data#readme",
   "dependencies": {
+    "fs-extra": "^8.1.0",
     "imagemin": "^7.0.1",
     "imagemin-jpegtran": "^6.0.0",
     "imagemin-pngquant": "^8.0.0",
