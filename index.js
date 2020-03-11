@@ -108,12 +108,18 @@ inquirer.prompt(firstPrompt).then(answer => {
           })
         ]
       });
-      fs.copy("images/to-compress", "images/original", err => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("压缩完成");
-        }
+      fs.readdir("images/to-compress", (err, files) => {
+        files.forEach(file => {
+          fs.rename(
+            `images/to-compress/${file}`,
+            `images/original/${file}`,
+            err => {
+              if (err) {
+                console.log(err);
+              }
+            }
+          );
+        });
       });
     })();
   } else {
