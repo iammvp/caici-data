@@ -33,6 +33,10 @@ const firstPrompt = {
       value: "compress-image"
     },
     {
+      name: "导出词汇",
+      value: "export"
+    },
+    {
       name: "退出",
       value: "exit"
     }
@@ -67,7 +71,7 @@ inquirer.prompt(firstPrompt).then(answer => {
       .then(addPromptAnser => {
         addWords(addPromptAnser.add);
       });
-  } else if (answer.firt === "delete") {
+  } else if (answer.first === "delete") {
     fs.readFile("./files/delete.txt", "utf8", (err, content) => {
       if (err) {
         console.log("读取删除词汇失败");
@@ -76,6 +80,7 @@ inquirer.prompt(firstPrompt).then(answer => {
         if (str === "") {
           console.log("删除词汇为空");
         } else {
+          console.log(str);
           inquirer
             .prompt({
               ...confirmPrompt,
@@ -122,8 +127,12 @@ inquirer.prompt(firstPrompt).then(answer => {
         });
       });
     })();
-  } else {
+  } else if(answer.first === 'exit') {
     process.exit();
+  } else if(answer.first === 'export') {
+    Promise.all(data.map( d => writeFilePromise(`./files/${d.title}.txt`, getRawWords(d.words)))).then(res => {
+      console.log('写入完成')
+    })
   }
 });
 
@@ -167,8 +176,10 @@ function addWords(index) {
                 }
                 const tempArray = str.split(indicator);
                 tempArray.forEach(v => {
-                  addWordToType(index, v); // 增加到对应类型
-                  addWordToType(0, v); // 增加到随机类型
+                  if (v.length > 0) {
+                    addWordToType(index, v); // 增加到对应类型
+                    addWordToType(0, v); // 增加到随机类型
+                  }
                 });
                 generateFile();
                 wipeUsedFile("./files/add.txt");
@@ -182,7 +193,9 @@ function addWords(index) {
 
 function deleteWord(word) {
   data.forEach(v => {
-    const index = v.words.findIndex(w => w === word);
+    const index = v.words.findIndex(
+      w => w.word.toLowerCase() === word.toLowerCase()
+    );
     if (index !== -1) {
       v.words.splice(index, 1);
       console.log(`${v.title}中找到词汇 ${word}, 删除成功`);
@@ -207,8 +220,15 @@ function savePrevData() {
 }
 
 function addWordToType(index, word) {
-  if (!data[index].words.includes(word)) {
-    data[index].words.push(word);
+  if (
+    data[index].words.findIndex(
+      w => w.word.toLowerCase() === word.toLowerCase()
+    ) === -1
+  ) {
+    data[index].words.push({
+      word,
+      l: strlen(word)
+    });
   } else {
     console.log(`${word}在${data[index].title}中重复,已经跳过`);
   }
@@ -220,4 +240,31 @@ function wipeUsedFile(path) {
       console.log("清理使用文件出错");
     }
   });
+}
+function strlen(str) {
+  var len = 0;
+  for (let i = 0; i < str.length; i++) {
+    if (str.charCodeAt(i) > 255 || str.charCodeAt(i) < 0) {
+      len += 2;
+    } else {
+      len += 1;
+    }
+  }
+  return len;
+}
+
+function writeFilePromise(path, content) {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(path, content, err =>{
+      if(err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
+
+function getRawWords(arr) {
+  return arr.reduce((str, wordObj) => str+' '+wordObj.word, '')
 }
