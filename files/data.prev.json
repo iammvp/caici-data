@@ -2,6 +2,9 @@
   "data": [
     {
       "title": "随机",
+      "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/random.png",
+      "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/random-inner.png",
+      "background": "#FF9700",
       "words": [
         {
           "word": "洗发水",
@@ -2974,11 +2977,118 @@
         {
           "word": "棒球",
           "l": 4
+        },
+        {
+          "word": "布泽尔",
+          "l": 6
+        },
+        {
+          "word": "雷阿伦",
+          "l": 6
+        },
+        {
+          "word": "皮蓬",
+          "l": 4
+        },
+        {
+          "word": "贾巴尔",
+          "l": 6
+        },
+        {
+          "word": "韦德",
+          "l": 4
+        },
+        {
+          "word": "下课",
+          "l": 4
+        },
+        {
+          "word": "颠球",
+          "l": 4
+        },
+        {
+          "word": "踢足球",
+          "l": 6
+        },
+        {
+          "word": "单打",
+          "l": 4
+        },
+        {
+          "word": "新秀",
+          "l": 4
+        },
+        {
+          "word": "禁赛",
+          "l": 4
+        },
+        {
+          "word": "黑哨",
+          "l": 4
+        },
+        {
+          "word": "失误",
+          "l": 4
+        },
+        {
+          "word": "傅园慧",
+          "l": 6
+        },
+        {
+          "word": "宁泽涛",
+          "l": 6
+        },
+        {
+          "word": "胯下运球",
+          "l": 8
+        },
+        {
+          "word": "乌龙球",
+          "l": 6
+        },
+        {
+          "word": "赛点",
+          "l": 4
+        },
+        {
+          "word": "热火",
+          "l": 4
+        },
+        {
+          "word": "鸟巢",
+          "l": 4
+        },
+        {
+          "word": "水立方",
+          "l": 6
+        },
+        {
+          "word": "拜仁",
+          "l": 4
+        },
+        {
+          "word": "补时",
+          "l": 4
+        },
+        {
+          "word": "铲球",
+          "l": 4
+        },
+        {
+          "word": "罚球",
+          "l": 4
+        },
+        {
+          "word": "本垒打",
+          "l": 6
         }
       ]
     },
     {
       "title": "合家欢",
+      "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/family.png",
+      "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/family-inner.png",
+      "background": "#2AB7FF",
       "words": [
         {
           "word": "洗发水",
@@ -4491,7 +4601,17 @@
       ]
     },
     {
+      "title": "成语",
+      "image": "",
+      "inner-image": "",
+      "background": "",
+      "words": []
+    },
+    {
       "title": "网络用语",
+      "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/internet.png",
+      "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/internet-inner.png",
+      "background": "#9870ff",
       "words": [
         {
           "word": "雨女无瓜",
@@ -5221,6 +5341,9 @@
     },
     {
       "title": "体育",
+      "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/tiyu.png",
+      "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/tiyu-inner.png",
+      "background": "#FAD843",
       "words": [
         {
           "word": "中超",
@@ -5977,6 +6100,110 @@
         {
           "word": "棒球",
           "l": 4
+        },
+        {
+          "word": "布泽尔",
+          "l": 6
+        },
+        {
+          "word": "雷阿伦",
+          "l": 6
+        },
+        {
+          "word": "皮蓬",
+          "l": 4
+        },
+        {
+          "word": "贾巴尔",
+          "l": 6
+        },
+        {
+          "word": "韦德",
+          "l": 4
+        },
+        {
+          "word": "下课",
+          "l": 4
+        },
+        {
+          "word": "颠球",
+          "l": 4
+        },
+        {
+          "word": "踢足球",
+          "l": 6
+        },
+        {
+          "word": "单打",
+          "l": 4
+        },
+        {
+          "word": "新秀",
+          "l": 4
+        },
+        {
+          "word": "禁赛",
+          "l": 4
+        },
+        {
+          "word": "黑哨",
+          "l": 4
+        },
+        {
+          "word": "失误",
+          "l": 4
+        },
+        {
+          "word": "傅园慧",
+          "l": 6
+        },
+        {
+          "word": "宁泽涛",
+          "l": 6
+        },
+        {
+          "word": "胯下运球",
+          "l": 8
+        },
+        {
+          "word": "乌龙球",
+          "l": 6
+        },
+        {
+          "word": "赛点",
+          "l": 4
+        },
+        {
+          "word": "热火",
+          "l": 4
+        },
+        {
+          "word": "鸟巢",
+          "l": 4
+        },
+        {
+          "word": "水立方",
+          "l": 6
+        },
+        {
+          "word": "拜仁",
+          "l": 4
+        },
+        {
+          "word": "补时",
+          "l": 4
+        },
+        {
+          "word": "铲球",
+          "l": 4
+        },
+        {
+          "word": "罚球",
+          "l": 4
+        },
+        {
+          "word": "本垒打",
+          "l": 6
         }
       ]
     }
