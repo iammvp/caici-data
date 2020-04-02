@@ -7258,9 +7258,9 @@
     },
     {
       "title": "成语",
-      "image": "",
-      "inner-image": "",
-      "background": "",
+      "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/chengyu.png",
+      "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/chengyu-inner.png",
+      "background": "#FF8CD8",
       "words": [
         {
           "word": "左右逢源",

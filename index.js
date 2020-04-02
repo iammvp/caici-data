@@ -6,6 +6,7 @@ const imageminJpegtran = require("imagemin-jpegtran");
 const imageminPngquant = require("imagemin-pngquant");
 const raw = require("./data.json");
 const data = raw.data;
+const gitReleaseVersion = require("./package.json")["release-version"];
 console.log(`当前词汇量: ${data[0].words.length}个, 类型: ${data.length}种`);
 for (let i = 0; i < data.length; i++) {
   console.log(`${data[i].title}: ${data[i].words.length} 个词汇`);
@@ -127,12 +128,16 @@ inquirer.prompt(firstPrompt).then(answer => {
         });
       });
     })();
-  } else if(answer.first === 'exit') {
+  } else if (answer.first === "exit") {
     process.exit();
-  } else if(answer.first === 'export') {
-    Promise.all(data.map( d => writeFilePromise(`./files/${d.title}.txt`, getRawWords(d.words)))).then(res => {
-      console.log('写入完成')
-    })
+  } else if (answer.first === "export") {
+    Promise.all(
+      data.map(d =>
+        writeFilePromise(`./files/${d.title}.txt`, getRawWords(d.words))
+      )
+    ).then(res => {
+      console.log("写入完成");
+    });
   }
 });
 
@@ -148,6 +153,16 @@ function generateFile() {
       console.log("写入压缩文件失败");
     }
     console.log("写入压缩完成");
+  });
+  const devRaw = JSON.stringify(raw).replace(
+    /npm\/caici-data[^\/]*/g,
+    `gh/iammvp/caici-data@${gitReleaseVersion}`
+  );
+  fs.writeFile("./data.dev.json", devRaw, err => {
+    if (err) {
+      console.log("写入dev文件失败");
+    }
+    console.log("写入dev完成");
   });
 }
 
@@ -255,16 +270,16 @@ function strlen(str) {
 
 function writeFilePromise(path, content) {
   return new Promise((resolve, reject) => {
-    fs.writeFile(path, content, err =>{
-      if(err) {
-        reject(err)
+    fs.writeFile(path, content, err => {
+      if (err) {
+        reject(err);
       } else {
-        resolve()
+        resolve();
       }
-    })
-  })
+    });
+  });
 }
 
 function getRawWords(arr) {
-  return arr.reduce((str, wordObj) => str+' '+wordObj.word, '')
+  return arr.reduce((str, wordObj) => str + " " + wordObj.word, "");
 }
