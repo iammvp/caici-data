@@ -191,9 +191,10 @@ function addWords(index) {
                 }
                 const tempArray = str.split(indicator);
                 tempArray.forEach(v => {
-                  if (v.length > 0) {
-                    addWordToType(index, v); // 增加到对应类型
-                    addWordToType(0, v); // 增加到随机类型
+                  const trimV = v.trim();
+                  if (trimV.length > 0) {
+                    addWordToType(index, trimV); // 增加到对应类型
+                    addWordToType(0, trimV); // 增加到随机类型
                   }
                 });
                 generateFile();
@@ -209,7 +210,7 @@ function addWords(index) {
 function deleteWord(word) {
   data.forEach(v => {
     const index = v.words.findIndex(
-      w => w.word.toLowerCase() === word.toLowerCase()
+      w => w.word.toLowerCase().trim() === word.toLowerCase().trim()
     );
     if (index !== -1) {
       v.words.splice(index, 1);
