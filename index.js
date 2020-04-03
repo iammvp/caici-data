@@ -133,7 +133,7 @@ inquirer.prompt(firstPrompt).then(answer => {
   } else if (answer.first === "export") {
     Promise.all(
       data.map(d =>
-        writeFilePromise(`./files/${d.title}.txt`, getRawWords(d.words))
+        writeFilePromise(`./files/current/${d.title}.txt`, getRawWords(d.words))
       )
     ).then(res => {
       console.log("写入完成");
@@ -194,7 +194,10 @@ function addWords(index) {
                   const trimV = v.trim();
                   if (trimV.length > 0) {
                     addWordToType(index, trimV); // 增加到对应类型
-                    addWordToType(0, trimV); // 增加到随机类型
+                    if (data[index].isOnly !== true) {
+                      // 如果不是专有词汇, 增加到随机词汇里面去
+                      addWordToType(0, trimV); // 增加到随机类型
+                    }
                   }
                 });
                 generateFile();
