@@ -2,6 +2,7 @@
   "data": [
     {
       "title": "随机",
+      "id": 1,
       "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/random.png",
       "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/random-inner.png",
       "background": "#FF9700",
@@ -6486,6 +6487,7 @@
     },
     {
       "title": "全靠演技",
+      "id": 2,
       "image": "https://cdn.jsdelivr.net/npm/caici-data@1.4.0/images/min/yanji.png",
       "inner-image": "https://cdn.jsdelivr.net/npm/caici-data@1.4.0/images/min/yanji-inner.png",
       "background": "#FAD843",
@@ -7474,6 +7476,7 @@
     },
     {
       "title": "合家欢",
+      "id": 3,
       "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/family.png",
       "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/family-inner.png",
       "background": "#2AB7FF",
@@ -8989,7 +8992,8 @@
       ]
     },
     {
-      "title": "成语",
+      "title": "四字成语",
+      "id": 4,
       "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/chengyu.png",
       "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/chengyu-inner.png",
       "background": "#FF8CD8",
@@ -11678,6 +11682,7 @@
     },
     {
       "title": "网络用语",
+      "id": 5,
       "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/internet.png",
       "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/internet-inner.png",
       "background": "#9870ff",
@@ -12410,6 +12415,7 @@
     },
     {
       "title": "体育",
+      "id": 6,
       "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/tiyu.png",
       "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/tiyu-inner.png",
       "background": "#FAD843",
