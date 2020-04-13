@@ -9,7 +9,9 @@ const data = raw.data;
 const gitReleaseVersion = require("./package.json")["release-version"];
 console.log(`当前词汇量: ${data[0].words.length}个, 类型: ${data.length}种`);
 for (let i = 0; i < data.length; i++) {
-  console.log(`${data[i].title}: ${data[i].words.length} 个词汇`);
+  console.log(
+    `${data[i].title}: ${data[i].words.length} 个词汇, id: ${data[i].id}`
+  );
 }
 
 const firstPrompt = {
@@ -19,29 +21,29 @@ const firstPrompt = {
   choices: [
     {
       name: "增加词汇",
-      value: "add"
+      value: "add",
     },
     {
       name: "删除词汇",
-      value: "delete"
+      value: "delete",
     },
     {
       name: "压缩json文件",
-      value: "compress"
+      value: "compress",
     },
     {
       name: "压缩图片文件",
-      value: "compress-image"
+      value: "compress-image",
     },
     {
       name: "导出词汇",
-      value: "export"
+      value: "export",
     },
     {
       name: "退出",
-      value: "exit"
-    }
-  ]
+      value: "exit",
+    },
+  ],
 };
 
 const typeSelectPrompt = {
@@ -51,25 +53,25 @@ const typeSelectPrompt = {
     for (let i = 1; i < data.length; i++) {
       temp.push({
         value: i,
-        name: data[i].title
+        name: data[i].title,
       });
     }
     return temp;
-  }
+  },
 };
 const confirmPrompt = {
   type: "confirm",
-  default: false
+  default: false,
 };
 
-inquirer.prompt(firstPrompt).then(answer => {
+inquirer.prompt(firstPrompt).then((answer) => {
   if (answer.first === "compress") {
     // 压缩文件
     generateFile();
   } else if (answer.first === "add") {
     inquirer
       .prompt({ ...typeSelectPrompt, name: "add", message: "增加哪个类型?" })
-      .then(addPromptAnser => {
+      .then((addPromptAnser) => {
         addWords(addPromptAnser.add);
       });
   } else if (answer.first === "delete") {
@@ -86,13 +88,13 @@ inquirer.prompt(firstPrompt).then(answer => {
             .prompt({
               ...confirmPrompt,
               name: "deleteConfirm",
-              message: `确定删除${str.substr(0, 20) + "..."} 等词语?`
+              message: `确定删除${str.substr(0, 20) + "..."} 等词语?`,
             })
-            .then(confirmAnswer => {
+            .then((confirmAnswer) => {
               if (confirmAnswer.deleteConfirm === true) {
                 savePrevData().then(() => {
                   const tempArray = str.split(" ");
-                  tempArray.forEach(v => {
+                  tempArray.forEach((v) => {
                     deleteWord(v);
                   });
                   generateFile();
@@ -110,16 +112,16 @@ inquirer.prompt(firstPrompt).then(answer => {
         plugins: [
           imageminJpegtran(),
           imageminPngquant({
-            quality: [0.6, 0.8]
-          })
-        ]
+            quality: [0.6, 0.8],
+          }),
+        ],
       });
       fs.readdir("images/to-compress", (err, files) => {
-        files.forEach(file => {
+        files.forEach((file) => {
           fs.rename(
             `images/to-compress/${file}`,
             `images/original/${file}`,
-            err => {
+            (err) => {
               if (err) {
                 console.log(err);
               }
@@ -132,23 +134,23 @@ inquirer.prompt(firstPrompt).then(answer => {
     process.exit();
   } else if (answer.first === "export") {
     Promise.all(
-      data.map(d =>
+      data.map((d) =>
         writeFilePromise(`./files/current/${d.title}.txt`, getRawWords(d.words))
       )
-    ).then(res => {
+    ).then((res) => {
       console.log("写入完成");
     });
   }
 });
 
 function generateFile() {
-  fs.writeFile("./data.json", JSON.stringify(raw, null, 2), err => {
+  fs.writeFile("./data.json", JSON.stringify(raw, null, 2), (err) => {
     if (err) {
       console.log("写入文件失败");
     }
     console.log("写入完成");
   });
-  fs.writeFile("./data.min.json", JSON.stringify(raw), err => {
+  fs.writeFile("./data.min.json", JSON.stringify(raw), (err) => {
     if (err) {
       console.log("写入压缩文件失败");
     }
@@ -158,7 +160,7 @@ function generateFile() {
     /npm\/caici-data[^\/]*/g,
     `gh/iammvp/caici-data@${gitReleaseVersion}`
   );
-  fs.writeFile("./data.dev.json", devRaw, err => {
+  fs.writeFile("./data.dev.json", devRaw, (err) => {
     if (err) {
       console.log("写入dev文件失败");
     }
@@ -179,18 +181,21 @@ function addWords(index) {
           .prompt({
             ...confirmPrompt,
             name: "addConfirm",
-            message: `确定向 ${data[index].title} 增加 ${str.substr(0, 20) +
-              "..."} 等词语?`
+            message: `确定向 ${data[index].title} 增加 ${
+              str.substr(0, 20) + "..."
+            } 等词语?`,
           })
-          .then(confirmAnswer => {
+          .then((confirmAnswer) => {
             if (confirmAnswer.addConfirm === true) {
               savePrevData().then(() => {
                 let indicator = " ";
                 if (str.includes(",")) {
                   indicator = ",";
+                } else if (str.includes("。")) {
+                  indicator = "。";
                 }
                 const tempArray = str.split(indicator);
-                tempArray.forEach(v => {
+                tempArray.forEach((v) => {
                   const trimV = v.trim();
                   if (trimV.length > 0) {
                     addWordToType(index, trimV); // 增加到对应类型
@@ -211,9 +216,9 @@ function addWords(index) {
 }
 
 function deleteWord(word) {
-  data.forEach(v => {
+  data.forEach((v) => {
     const index = v.words.findIndex(
-      w => w.word.toLowerCase().trim() === word.toLowerCase().trim()
+      (w) => w.word.toLowerCase().trim() === word.toLowerCase().trim()
     );
     if (index !== -1) {
       v.words.splice(index, 1);
@@ -227,7 +232,7 @@ function savePrevData() {
     fs.writeFile(
       "./files/data.prev.json",
       JSON.stringify(raw, null, 2),
-      err => {
+      (err) => {
         if (err) {
           reject(err);
         } else {
@@ -241,12 +246,12 @@ function savePrevData() {
 function addWordToType(index, word) {
   if (
     data[index].words.findIndex(
-      w => w.word.toLowerCase() === word.toLowerCase()
+      (w) => w.word.toLowerCase() === word.toLowerCase()
     ) === -1
   ) {
     data[index].words.push({
       word,
-      l: strlen(word)
+      l: strlen(word),
     });
   } else {
     console.log(`${word}在${data[index].title}中重复,已经跳过`);
@@ -254,7 +259,7 @@ function addWordToType(index, word) {
 }
 
 function wipeUsedFile(path) {
-  fs.writeFile(path, "", err => {
+  fs.writeFile(path, "", (err) => {
     if (err) {
       console.log("清理使用文件出错");
     }
@@ -274,7 +279,7 @@ function strlen(str) {
 
 function writeFilePromise(path, content) {
   return new Promise((resolve, reject) => {
-    fs.writeFile(path, content, err => {
+    fs.writeFile(path, content, (err) => {
       if (err) {
         reject(err);
       } else {
