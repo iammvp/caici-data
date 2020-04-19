@@ -10470,8 +10470,8 @@
     {
       "title": "爱豆",
       "id": 7,
-      "image": "https://cdn.jsdelivr.net/npm/caici-data@1.4.0/images/min/idol.png",
-      "inner-image": "https://cdn.jsdelivr.net/npm/caici-data@1.4.0/images/min/idol-inner.png",
+      "image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/idol.png",
+      "inner-image": "https://cdn.jsdelivr.net/npm/caici-data/images/min/idol-inner.png",
       "background": "#FAD843",
       "words": [
         {
@@ -15498,7 +15498,7 @@
   ],
   "file": {
     "image": {
-      "share": "https://cdn.jsdelivr.net/npm/caici-data/images/min/share.jpg",
+      "share": "https://cdn.jsdelivr.net/npm/caici-data/images/min/share.png",
       "guideSlide1": "https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide1.png",
       "guideSlide2": "https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide2.png",
       "guideSlide3": "https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide3.png",
