@@ -7,6 +7,7 @@ const imageminPngquant = require("imagemin-pngquant");
 const raw = require("./data.json");
 const data = raw.data;
 const gitReleaseVersion = require("./package.json")["release-version"];
+const version = "v2";
 console.log(`当前词汇量: ${data[0].words.length}个, 类型: ${data.length}种`);
 for (let i = 0; i < data.length; i++) {
   console.log(
@@ -166,6 +167,19 @@ function generateFile() {
     }
     console.log("写入dev完成");
   });
+  const typeList = data.map((v) => {
+    let { words, ...type } = v;
+    return type;
+  });
+  fs.writeFile(
+    `./${version}/type-list.json`,
+    JSON.stringify(typeList),
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
 }
 
 function addWords(index) {
