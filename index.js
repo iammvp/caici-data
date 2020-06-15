@@ -167,13 +167,25 @@ function generateFile() {
     }
     console.log("写入dev完成");
   });
-  const typeList = data.map((v) => {
+  let wordList = [],
+    typeList = [];
+  data.forEach((v) => {
     let { words, ...type } = v;
-    return type;
+    wordList.push(words);
+    typeList.push(type);
   });
   fs.writeFile(
     `./${version}/type-list.json`,
     JSON.stringify(typeList),
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+  fs.writeFile(
+    `./${version}/word-list.json`,
+    JSON.stringify(wordList),
     (err) => {
       if (err) {
         console.log(err);
