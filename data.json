@@ -15941,5 +15941,15 @@
       "result": "https://cdn.jsdelivr.net/npm/caici-data/audio/result-page.mp3"
     }
   },
-  "sort": [1, 2, 3, 7, [4, 5], 6]
+  "sort": [
+    1,
+    2,
+    3,
+    7,
+    [
+      4,
+      5
+    ],
+    6
+  ]
 }
