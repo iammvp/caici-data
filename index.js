@@ -171,7 +171,7 @@ function generateFile() {
     typeList = [];
   data.forEach((v) => {
     let { words, ...type } = v;
-    wordList.push(words);
+    wordList.push({ words: words, id: v.id });
     typeList.push(type);
   });
   fs.writeFile(
@@ -186,6 +186,15 @@ function generateFile() {
   fs.writeFile(
     `./${version}/word-list.json`,
     JSON.stringify(wordList),
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+  fs.writeFile(
+    `./${version}/static-file.json`,
+    JSON.stringify(raw.file),
     (err) => {
       if (err) {
         console.log(err);
