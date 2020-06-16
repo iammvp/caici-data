@@ -172,11 +172,24 @@ function generateFile() {
   data.forEach((v) => {
     let { words, ...type } = v;
     wordList.push(words);
-    typeList.push({ type, sort: raw.sort });
+    typeList.push(type);
   });
   fs.writeFile(
     `./${version}/type-list.json`,
-    JSON.stringify(typeList),
+    JSON.stringify({ typeList, sort: raw.sort, file: raw.file }),
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+  // 小米手机屏蔽jsdelir 使用 unpkg
+  fs.writeFile(
+    `./${version}/type-list.unpkg.json`,
+    JSON.stringify({ typeList, sort: raw.sort, file: raw.file }).replace(
+      /https:\/\/cdn.jsdelivr.net\/npm\/caici-data[^\/]*/g,
+      "https://unpkg.com/caici-data"
+    ),
     (err) => {
       if (err) {
         console.log(err);
@@ -186,15 +199,6 @@ function generateFile() {
   fs.writeFile(
     `./${version}/word-list.json`,
     JSON.stringify(wordList),
-    (err) => {
-      if (err) {
-        console.log(err);
-      }
-    }
-  );
-  fs.writeFile(
-    `./${version}/static-file.json`,
-    JSON.stringify(raw.file),
     (err) => {
       if (err) {
         console.log(err);

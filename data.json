@@ -15927,7 +15927,7 @@
       "guideSlide2": "https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide2.png",
       "guideSlide3": "https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide3.png",
       "innerLogo": "https://cdn.jsdelivr.net/npm/caici-data/images/min/inner-logo.png",
-      "background": "https://cdn.jsdelivr.net/npm/caici-data/audio/next-catgory.mp3",
+      "background": "https://cdn.jsdelivr.net/npm/caici-data/images/min/bg.png",
       "guide": "https://cdn.jsdelivr.net/npm/caici-data/images/min/guide.png",
       "right": "https://cdn.jsdelivr.net/npm/caici-data/images/min/right.png",
       "error": "https://cdn.jsdelivr.net/npm/caici-data/images/min/error.png"
@@ -15946,10 +15946,8 @@
     2,
     3,
     7,
-    [
-      4,
-      5
-    ],
+    4,
+    5,
     6
   ]
 }
