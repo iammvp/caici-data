@@ -7,6 +7,7 @@ const imageminPngquant = require("imagemin-pngquant");
 const raw = require("./data.json");
 const data = raw.data;
 const gitReleaseVersion = require("./package.json")["release-version"];
+const localServer = 'http://10.251.87.82:3000';
 const version = "v2";
 console.log(`当前词汇量: ${data[0].words.length}个, 类型: ${data.length}种`);
 for (let i = 0; i < data.length; i++) {
@@ -158,9 +159,12 @@ function generateFile() {
     console.log("写入压缩完成");
   });
   const devRaw = JSON.stringify(raw).replace(
-    /npm\/caici-data[^\/]*/g,
-    `gh/iammvp/caici-data@${gitReleaseVersion}`
+    // /npm\/caici-data[^\/]*/g,
+    // `gh/iammvp/caici-data@${gitReleaseVersion}`
+    /https:\/\/cdn.jsdelivr.net\/npm\/caici-data[^\/]*/g,
+    `${localServer}`
   );
+  const devData = JSON.parse(devRaw);
   fs.writeFile("./data.dev.json", devRaw, (err) => {
     if (err) {
       console.log("写入dev文件失败");
@@ -168,12 +172,22 @@ function generateFile() {
     console.log("写入dev完成");
   });
   let wordList = [],
-    typeList = [];
+    devWordList = [],
+    typeList = [],
+    devTypeList = [];
+  // 剥离正式数据
   data.forEach((v) => {
     let { words, ...type } = v;
     wordList.push(words);
     typeList.push(type);
   });
+  // 剥离dev数据
+  devData.data.forEach((v) => {
+    let { words, ...type } = v;
+    devWordList.push(words);
+    devTypeList.push(type);
+  });
+  // 写入正式数据v2
   fs.writeFile(
     `./${version}/type-list.json`,
     JSON.stringify({ typeList, sort: raw.sort, file: raw.file }),
@@ -183,13 +197,19 @@ function generateFile() {
       }
     }
   );
-  // 小米手机屏蔽jsdelir 使用 unpkg
   fs.writeFile(
-    `./${version}/type-list.unpkg.json`,
-    JSON.stringify({ typeList, sort: raw.sort, file: raw.file }).replace(
-      /https:\/\/cdn.jsdelivr.net\/npm\/caici-data[^\/]*/g,
-      "https://unpkg.com/caici-data"
-    ),
+    `./${version}/word-list.json`,
+    JSON.stringify(wordList),
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+  // 写入测试数据v2
+  fs.writeFile(
+    `./${version}/type-list.dev.json`,
+    JSON.stringify({ typeList: devTypeList, sort: devData.sort, file: devData.file }),
     (err) => {
       if (err) {
         console.log(err);
@@ -197,8 +217,8 @@ function generateFile() {
     }
   );
   fs.writeFile(
-    `./${version}/word-list.json`,
-    JSON.stringify(wordList),
+    `./${version}/word-list.dev.json`,
+    JSON.stringify(devWordList),
     (err) => {
       if (err) {
         console.log(err);
