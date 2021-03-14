@@ -159,10 +159,10 @@ function generateFile() {
     console.log("写入压缩完成");
   });
   const devRaw = JSON.stringify(raw).replace(
-    // /npm\/caici-data[^\/]*/g,
-    // `gh/iammvp/caici-data@${gitReleaseVersion}`
-    /https:\/\/cdn.jsdelivr.net\/npm\/caici-data[^\/]*/g,
-    `${localServer}`
+    /npm\/caici-data[^\/]*/g,
+    `gh/iammvp/caici-data@${gitReleaseVersion}`
+    // /https:\/\/cdn.jsdelivr.net\/npm\/caici-data[^\/]*/g,
+    // `${localServer}`
   );
   const devData = JSON.parse(devRaw);
   fs.writeFile("./data.dev.json", devRaw, (err) => {
