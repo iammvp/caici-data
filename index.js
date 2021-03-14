@@ -7,7 +7,8 @@ const imageminPngquant = require("imagemin-pngquant");
 const raw = require("./data.json");
 const data = raw.data;
 const gitReleaseVersion = require("./package.json")["release-version"];
-const localServer = 'http://10.251.87.82:3000';
+const localServer = "http://192.168.8.166:3000";
+// const localServer = `https://cdn.jsdelivr.net/gh/iammvp/caici-data@${gitReleaseVersion}`;
 const version = "v2";
 console.log(`当前词汇量: ${data[0].words.length}个, 类型: ${data.length}种`);
 for (let i = 0; i < data.length; i++) {
@@ -159,10 +160,10 @@ function generateFile() {
     console.log("写入压缩完成");
   });
   const devRaw = JSON.stringify(raw).replace(
-    /npm\/caici-data[^\/]*/g,
-    `gh/iammvp/caici-data@${gitReleaseVersion}`
-    // /https:\/\/cdn.jsdelivr.net\/npm\/caici-data[^\/]*/g,
-    // `${localServer}`
+    // /npm\/caici-data[^\/]*/g,
+    // `gh/iammvp/caici-data@${gitReleaseVersion}`
+    /https:\/\/cdn.jsdelivr.net\/npm\/caici-data[^\/]*/g,
+    `${localServer}`
   );
   const devData = JSON.parse(devRaw);
   fs.writeFile("./data.dev.json", devRaw, (err) => {
@@ -208,8 +209,12 @@ function generateFile() {
   );
   // 写入测试数据v2
   fs.writeFile(
-    `./${version}/type-list.dev.json`,
-    JSON.stringify({ typeList: devTypeList, sort: devData.sort, file: devData.file }),
+    `./${version}/dev/type-list.json`,
+    JSON.stringify({
+      typeList: devTypeList,
+      sort: devData.sort,
+      file: devData.file,
+    }),
     (err) => {
       if (err) {
         console.log(err);
@@ -217,7 +222,7 @@ function generateFile() {
     }
   );
   fs.writeFile(
-    `./${version}/word-list.dev.json`,
+    `./${version}/dev/word-list.json`,
     JSON.stringify(devWordList),
     (err) => {
       if (err) {
