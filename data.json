@@ -37740,6 +37740,7 @@
   "file": {
     "image": {
       "share": "https://cdn.jsdelivr.net/npm/caici-data/images/min/share.png",
+      "power": "https://cdn.jsdelivr.net/npm/caici-data/images/min/power.png",
       "guideSlide1": "https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide1.png",
       "guideSlide2": "https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide2.png",
       "guideSlide3": "https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide3.png",
