@@ -7,9 +7,10 @@ const imageminJpegtran = require("imagemin-jpegtran");
 const imageminPngquant = require("imagemin-pngquant");
 const raw = require("./data.json");
 const data = raw.data;
+const buildEnv = process.env.ENV;
 const localIP = networkInterfaces()['en0'][0]['address']; 
 const localServer = `http://${localIP}:3000`;
-// const localServer = `https://cdn.jsdelivr.net/gh/iammvp/caici-data@${gitReleaseVersion}`;
+const githubServer = `https://cdn.jsdelivr.net/gh/iammvp/caici-data@latest`;
 const version = "v2";
 console.log(`当前词汇量: ${data[0].words.length}个, 类型: ${data.length}种`);
 for (let i = 0; i < data.length; i++) {
@@ -164,7 +165,7 @@ function generateFile() {
     // /npm\/caici-data[^\/]*/g,
     // `gh/iammvp/caici-data@${gitReleaseVersion}`
     /https:\/\/cdn.jsdelivr.net\/npm\/caici-data[^\/]*/g,
-    `${localServer}`
+    `${ buildEnv === 'dev' ? localServer : githubServer}`
   );
   const devData = JSON.parse(devRaw);
   fs.writeFile("./data.dev.json", devRaw, (err) => {
