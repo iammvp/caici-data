@@ -1,13 +1,14 @@
 "use strict";
 const fs = require("fs-extra");
+const { networkInterfaces } = require('os');
 const inquirer = require("inquirer");
 const imagemin = require("imagemin");
 const imageminJpegtran = require("imagemin-jpegtran");
 const imageminPngquant = require("imagemin-pngquant");
 const raw = require("./data.json");
 const data = raw.data;
-const gitReleaseVersion = require("./package.json")["release-version"];
-const localServer = "http://192.168.8.166:3000";
+const localIP = networkInterfaces()['en0'][0]['address']; 
+const localServer = `http://${localIP}:3000`;
 // const localServer = `https://cdn.jsdelivr.net/gh/iammvp/caici-data@${gitReleaseVersion}`;
 const version = "v2";
 console.log(`当前词汇量: ${data[0].words.length}个, 类型: ${data.length}种`);
