@@ -1,0 +1,114 @@
+{
+  "typeList": [
+    {
+      "title": "随机",
+      "id": 1,
+      "image": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/random.webp",
+        "base64": "./images/webp/random.webp"
+      },
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/random-inner.webp",
+      "background": "#FF9700"
+    },
+    {
+      "title": "全靠演技",
+      "id": 2,
+      "image": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/yanji.webp",
+        "base64": "./images/webp/yanji.webp"
+      },
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/yanji-inner.webp",
+      "background": "#FAD843"
+    },
+    {
+      "title": "合家欢",
+      "id": 3,
+      "image": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/family.webp",
+        "base64": "./images/webp/family.webp"
+      },
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/family-inner.webp",
+      "background": "#2AB7FF"
+    },
+    {
+      "title": "爱豆",
+      "id": 7,
+      "image": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/idol.webp",
+        "base64": "./images/webp/idol.webp"
+      },
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/idol-inner.webp",
+      "background": "#FAD843"
+    },
+    {
+      "title": "四字成语",
+      "id": 4,
+      "image": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/chengyu.webp",
+        "base64": "./images/webp/chengyu.webp"
+      },
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/chengyu-inner.webp",
+      "background": "#FF8CD8"
+    },
+    {
+      "title": "网络用语",
+      "id": 5,
+      "image": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/internet.webp",
+        "base64": "./images/webp/internet.webp"
+      },
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/internet-inner.webp",
+      "background": "#9870ff"
+    },
+    {
+      "title": "体育",
+      "id": 6,
+      "image": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/tiyu.webp",
+        "base64": "./images/webp/tiyu.webp"
+      },
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/tiyu-inner.webp",
+      "background": "#FAD843"
+    },
+    {
+      "title": "干饭人",
+      "id": 8,
+      "image": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/food.webp",
+        "base64": "./images/webp/food.webp"
+      },
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/food-inner.webp",
+      "background": "#81EF33"
+    }
+  ],
+  "sort": [1, 8, 2, 3, 7, 4, 5, 6],
+  "file": {
+    "image": {
+      "share": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/share.webp",
+      "power": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/power.webp",
+        "base64": "./images/webp/power.webp"
+      },
+      "popupBg": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/bg-tanchuang.webp",
+      "guideSlide1": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/guide-slide1.webp",
+      "guideSlide2": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/guide-slide2.webp",
+      "guideSlide3": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/guide-slide3.webp",
+      "innerLogo": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/inner-logo.webp",
+        "base64": "./images/webp/inner-logo.webp"
+      },
+      "background": "./images/min/bg.png",
+      "guide": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/guide.webp",
+      "right": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/right.webp",
+      "error": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/error.webp"
+    },
+    "audio": {
+      "pass": "https://fastly.jsdelivr.net/npm/caici-data/audio/pass.mp3",
+      "right": "https://fastly.jsdelivr.net/npm/caici-data/audio/right.mp3",
+      "countdown": "https://fastly.jsdelivr.net/npm/caici-data/audio/countdown.mp3",
+      "timeount": "https://fastly.jsdelivr.net/npm/caici-data/audio/timeout.mp3",
+      "nextCatgory": "https://fastly.jsdelivr.net/npm/caici-data/audio/next-catgory.mp3",
+      "result": "https://fastly.jsdelivr.net/npm/caici-data/audio/result-page.mp3"
+    }
+  }
+}

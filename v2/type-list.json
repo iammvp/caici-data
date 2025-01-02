@@ -1,1 +1,84 @@
-{"typeList":[{"title":"随机","id":1,"image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/random.png","inner-image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/random-inner.png","background":"#FF9700"},{"title":"全靠演技","id":2,"image":"https://cdn.jsdelivr.net/npm/caici-data@1.4.0/images/min/yanji.png","inner-image":"https://cdn.jsdelivr.net/npm/caici-data@1.4.0/images/min/yanji-inner.png","background":"#FAD843"},{"title":"合家欢","id":3,"image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/family.png","inner-image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/family-inner.png","background":"#2AB7FF"},{"title":"爱豆","id":7,"image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/idol.png","inner-image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/idol-inner.png","background":"#FAD843"},{"title":"四字成语","id":4,"image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/chengyu.png","inner-image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/chengyu-inner.png","background":"#FF8CD8"},{"title":"网络用语","id":5,"image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/internet.png","inner-image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/internet-inner.png","background":"#9870ff"},{"title":"体育","id":6,"image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/tiyu.png","inner-image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/tiyu-inner.png","background":"#FAD843"},{"title":"干饭人","id":8,"image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/food.png","inner-image":"https://cdn.jsdelivr.net/npm/caici-data/images/min/food-inner.png","background":"#81EF33"}],"sort":[1,8,2,3,7,4,5,6],"file":{"image":{"share":"https://cdn.jsdelivr.net/npm/caici-data/images/min/share.png","power":"https://cdn.jsdelivr.net/npm/caici-data/images/min/power.png","popupBg":"https://cdn.jsdelivr.net/npm/caici-data/images/min/bg-tanchuang.png","guideSlide1":"https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide1.png","guideSlide2":"https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide2.png","guideSlide3":"https://cdn.jsdelivr.net/npm/caici-data/images/min/guide-slide3.png","innerLogo":"https://cdn.jsdelivr.net/npm/caici-data/images/min/inner-logo.png","background":"https://cdn.jsdelivr.net/npm/caici-data/images/min/bg.png","guide":"https://cdn.jsdelivr.net/npm/caici-data/images/min/guide.png","right":"https://cdn.jsdelivr.net/npm/caici-data/images/min/right.png","error":"https://cdn.jsdelivr.net/npm/caici-data/images/min/error.png"},"audio":{"pass":"https://cdn.jsdelivr.net/npm/caici-data/audio/pass.mp3","right":"https://cdn.jsdelivr.net/npm/caici-data/audio/right.mp3","countdown":"https://cdn.jsdelivr.net/npm/caici-data/audio/countdown.mp3","timeount":"https://cdn.jsdelivr.net/npm/caici-data/audio/timeout.mp3","nextCatgory":"https://cdn.jsdelivr.net/npm/caici-data/audio/next-catgory.mp3","result":"https://cdn.jsdelivr.net/npm/caici-data/audio/result-page.mp3"}}}
+{
+  "typeList": [
+    {
+      "title": "随机",
+      "id": 1,
+      "image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/random.png",
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/random-inner.png",
+      "background": "#FF9700"
+    },
+    {
+      "title": "全靠演技",
+      "id": 2,
+      "image": "https://fastly.jsdelivr.net/npm/caici-data@1.4.0/images/min/yanji.png",
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data@1.4.0/images/min/yanji-inner.png",
+      "background": "#FAD843"
+    },
+    {
+      "title": "合家欢",
+      "id": 3,
+      "image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/family.png",
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/family-inner.png",
+      "background": "#2AB7FF"
+    },
+    {
+      "title": "爱豆",
+      "id": 7,
+      "image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/idol.png",
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/idol-inner.png",
+      "background": "#FAD843"
+    },
+    {
+      "title": "四字成语",
+      "id": 4,
+      "image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/chengyu.png",
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/chengyu-inner.png",
+      "background": "#FF8CD8"
+    },
+    {
+      "title": "网络用语",
+      "id": 5,
+      "image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/internet.png",
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/internet-inner.png",
+      "background": "#9870ff"
+    },
+    {
+      "title": "体育",
+      "id": 6,
+      "image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/tiyu.png",
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/tiyu-inner.png",
+      "background": "#FAD843"
+    },
+    {
+      "title": "干饭人",
+      "id": 8,
+      "image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/food.png",
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data/images/min/food-inner.png",
+      "background": "#81EF33"
+    }
+  ],
+  "sort": [1, 8, 2, 3, 7, 4, 5, 6],
+  "file": {
+    "image": {
+      "share": "https://fastly.jsdelivr.net/npm/caici-data/images/min/share.png",
+      "power": "https://fastly.jsdelivr.net/npm/caici-data/images/min/power.png",
+      "popupBg": "https://fastly.jsdelivr.net/npm/caici-data/images/min/bg-tanchuang.png",
+      "guideSlide1": "https://fastly.jsdelivr.net/npm/caici-data/images/min/guide-slide1.png",
+      "guideSlide2": "https://fastly.jsdelivr.net/npm/caici-data/images/min/guide-slide2.png",
+      "guideSlide3": "https://fastly.jsdelivr.net/npm/caici-data/images/min/guide-slide3.png",
+      "innerLogo": "https://fastly.jsdelivr.net/npm/caici-data/images/min/inner-logo.png",
+      "background": "https://fastly.jsdelivr.net/npm/caici-data/images/min/bg.png",
+      "guide": "https://fastly.jsdelivr.net/npm/caici-data/images/min/guide.png",
+      "right": "https://fastly.jsdelivr.net/npm/caici-data/images/min/right.png",
+      "error": "https://fastly.jsdelivr.net/npm/caici-data/images/min/error.png"
+    },
+    "audio": {
+      "pass": "https://fastly.jsdelivr.net/npm/caici-data/audio/pass.mp3",
+      "right": "https://fastly.jsdelivr.net/npm/caici-data/audio/right.mp3",
+      "countdown": "https://fastly.jsdelivr.net/npm/caici-data/audio/countdown.mp3",
+      "timeount": "https://fastly.jsdelivr.net/npm/caici-data/audio/timeout.mp3",
+      "nextCatgory": "https://fastly.jsdelivr.net/npm/caici-data/audio/next-catgory.mp3",
+      "result": "https://fastly.jsdelivr.net/npm/caici-data/audio/result-page.mp3"
+    }
+  }
+}

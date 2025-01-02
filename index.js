@@ -1,21 +1,29 @@
 "use strict";
 const fs = require("fs-extra");
-const { networkInterfaces } = require('os');
+const { networkInterfaces } = require("os");
 const inquirer = require("inquirer");
+const { globSync } = require("glob");
+const LZString = require("lz-string");
+const lodashSet = require("lodash.set");
+const raw = require("./data.json");
+const infoListData = require("./info-list.json");
+const typeListData = infoListData.typeList;
+const wordListData = require("./word-list.json");
+const path = require("path");
+const sharp = require("sharp");
 const imagemin = require("imagemin");
 const imageminJpegtran = require("imagemin-jpegtran");
-const imageminPngquant = require("imagemin-pngquant");
-const raw = require("./data.json");
+const { default: imageminPngquant } = require("imagemin-pngquant");
 const data = raw.data;
 const buildEnv = process.env.ENV;
-const localIP = networkInterfaces()['en0'][0]['address']; 
+const localIP = networkInterfaces()["en0"][0]["address"];
 const localServer = `http://${localIP}:3000`;
-const githubServer = `https://cdn.jsdelivr.net/gh/iammvp/caici-data@latest`;
+const githubServer = `https://fastly.jsdelivr.net/gh/iammvp/caici-data@latest`;
 const version = "v2";
-console.log(`当前词汇量: ${data[0].words.length}个, 类型: ${data.length}种`);
-for (let i = 0; i < data.length; i++) {
+for (let i = 0; i < typeListData.length; i++) {
+  const info = typeListData[i];
   console.log(
-    `${data[i].title}: ${data[i].words.length} 个词汇, id: ${data[i].id}`
+    `${info.title}: ${wordListData[i].length} 个词汇, id: ${info.id}`,
   );
 }
 
@@ -45,6 +53,10 @@ const firstPrompt = {
       value: "export",
     },
     {
+      name: "复制信息到项目",
+      value: "copy",
+    },
+    {
       name: "退出",
       value: "exit",
     },
@@ -55,7 +67,7 @@ const typeSelectPrompt = {
   type: "list",
   choices: () => {
     let temp = [];
-    for (let i = 1; i < data.length; i++) {
+    for (let i = 1; i < wordListData.length; i++) {
       temp.push({
         value: i,
         name: data[i].title,
@@ -97,14 +109,12 @@ inquirer.prompt(firstPrompt).then((answer) => {
             })
             .then((confirmAnswer) => {
               if (confirmAnswer.deleteConfirm === true) {
-                savePrevData().then(() => {
-                  const tempArray = str.split(" ");
-                  tempArray.forEach((v) => {
-                    deleteWord(v);
-                  });
-                  generateFile();
-                  wipeUsedFile("./files/delete.txt");
+                const tempArray = str.split(" ");
+                tempArray.forEach((v) => {
+                  deleteWord(v);
                 });
+                generateFile();
+                wipeUsedFile("./files/delete.txt");
               }
             });
         }
@@ -112,128 +122,140 @@ inquirer.prompt(firstPrompt).then((answer) => {
     });
   } else if (answer.first === "compress-image") {
     (async () => {
-      const files = await imagemin(["images/to-compress/*.{jpg,png}"], {
-        destination: "images/min",
-        plugins: [
-          imageminJpegtran(),
-          imageminPngquant({
-            quality: [0.6, 0.8],
-          }),
-        ],
-      });
-      fs.readdir("images/to-compress", (err, files) => {
-        files.forEach((file) => {
-          fs.rename(
-            `images/to-compress/${file}`,
-            `images/original/${file}`,
-            (err) => {
-              if (err) {
-                console.log(err);
-              }
-            }
-          );
+      // const name = "guide-slide1";
+      // const frames = 30;
+      // const width = 18000;
+      // const height = 444;
+      // const per = width / frames;
+      // const promiseArray = globSync(`images/min/${name}.{jpg,png}`).map((v) => {
+      //   for (let i = 0; i < frames; i++) {
+      //     sharp(v)
+      //       .extract({ left: per * i, top: 0, width: per, height: height })
+      //       .webp({ quality: 100 })
+      //       .toFile(
+      //         path.join("images/webp", `${name}_${i + 1}.webp`),
+      //         function (err) {
+      //           console.log(err);
+      //         },
+      //       );
+      //   }
+      // });
+      const promiseArray = globSync("images/min/*.{jpg,png}")
+        .filter((v) => !v.includes("guide"))
+        .map((v) => {
+          const name = path.basename(v, path.extname(v));
+          const filesInfo = {
+            from: v,
+            to: path.join("images/webp", `${name}.webp`),
+          };
+          return sharp(filesInfo.from)
+            .webp({ quality: 10, alphaQuality: 10 })
+            .toFile(filesInfo.to);
         });
+      Promise.all(promiseArray).then((_) => {
+        console.log("压缩完成");
       });
     })();
   } else if (answer.first === "exit") {
     process.exit();
   } else if (answer.first === "export") {
     Promise.all(
-      data.map((d) =>
-        writeFilePromise(`./files/current/${d.title}.txt`, getRawWords(d.words))
-      )
+      wordListData.map((d, index) =>
+        writeFilePromise(
+          `./files/current/${typeListData[index].title}.txt`,
+          getRawWords(d),
+        ),
+      ),
     ).then((res) => {
       console.log("写入完成");
     });
+  } else if (answer.first === "copy") {
+    fs.cp(
+      "./compressData",
+      "../caici/src/data/",
+      { recursive: true },
+      (err) => {
+        console.log("done");
+      },
+    );
   }
 });
 
 function generateFile() {
-  fs.writeFile("./data.json", JSON.stringify(raw, null, 2), (err) => {
-    if (err) {
-      console.log("写入文件失败");
-    }
-    console.log("写入完成");
+  fs.writeFileSync("./word-list.json", JSON.stringify(wordListData, null, 2));
+
+  // const devRaw = JSON.stringify(raw).replace(
+  //   // /npm\/caici-data[^\/]*/g,
+  //   // `gh/iammvp/caici-data@${gitReleaseVersion}`
+  //   /https:\/\/fastly.jsdelivr.net\/npm\/caici-data[^\/]*/g,
+  //   `${buildEnv === "dev" ? localServer : githubServer}`,
+  // );
+  transLocalImageToBase64().then(() => {
+    fs.writeFile(
+      "./compressData/infoList.txt",
+      LZString.compressToBase64(JSON.stringify(infoListData)),
+      (err) => {
+        if (err) {
+          console.log("写入压缩文件失败");
+        }
+      },
+    );
+    fs.writeFile(
+      "./compressData/wordList.txt",
+      LZString.compressToBase64(JSON.stringify(wordListData)),
+      (err) => {
+        if (err) {
+          console.log("写入压缩文件失败");
+        }
+      },
+    );
   });
-  fs.writeFile("./data.min.json", JSON.stringify(raw), (err) => {
-    if (err) {
-      console.log("写入压缩文件失败");
-    }
-    console.log("写入压缩完成");
-  });
-  const devRaw = JSON.stringify(raw).replace(
-    // /npm\/caici-data[^\/]*/g,
-    // `gh/iammvp/caici-data@${gitReleaseVersion}`
-    /https:\/\/cdn.jsdelivr.net\/npm\/caici-data[^\/]*/g,
-    `${ buildEnv === 'dev' ? localServer : githubServer}`
-  );
-  const devData = JSON.parse(devRaw);
-  fs.writeFile("./data.dev.json", devRaw, (err) => {
-    if (err) {
-      console.log("写入dev文件失败");
-    }
-    console.log("写入dev完成");
-  });
-  let wordList = [],
-    devWordList = [],
-    typeList = [],
-    devTypeList = [];
-  // 剥离正式数据
-  data.forEach((v) => {
-    let { words, ...type } = v;
-    wordList.push(words);
-    typeList.push(type);
-  });
-  // 剥离dev数据
-  devData.data.forEach((v) => {
-    let { words, ...type } = v;
-    devWordList.push(words);
-    devTypeList.push(type);
-  });
-  // 写入正式数据v2
-  fs.writeFile(
-    `./${version}/type-list.json`,
-    JSON.stringify({ typeList, sort: raw.sort, file: raw.file }),
-    (err) => {
-      if (err) {
-        console.log(err);
-      }
-    }
-  );
-  fs.writeFile(
-    `./${version}/word-list.json`,
-    JSON.stringify(wordList),
-    (err) => {
-      if (err) {
-        console.log(err);
-      }
-    }
-  );
-  // 写入测试数据v2
-  fs.writeFile(
-    `./${version}/dev/type-list.json`,
-    JSON.stringify({
-      typeList: devTypeList,
-      sort: devData.sort,
-      file: devData.file,
-    }),
-    (err) => {
-      if (err) {
-        console.log(err);
-      }
-    }
-  );
-  fs.writeFile(
-    `./${version}/dev/word-list.json`,
-    JSON.stringify(devWordList),
-    (err) => {
-      if (err) {
-        console.log(err);
-      }
-    }
-  );
 }
 
+function transLocalImageToBase64() {
+  const localImageInfo = getAllLocalImage();
+  const arrayPromise = localImageInfo.map((v) => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(v.filePath, (error, data) => {
+        const ext = path.extname(v.filePath);
+        const imageBase64 =
+          `data:image/${ext};base64,` + data.toString("base64");
+        lodashSet(infoListData, v.keyPath, imageBase64);
+        resolve();
+      });
+    });
+  });
+  return new Promise((resolve) => {
+    Promise.all(arrayPromise).then(() => {
+      return resolve();
+    });
+  });
+}
+
+function getAllLocalImage() {
+  let result = [];
+  function travel(prefix, data) {
+    for (let key in data) {
+      if (typeof data[key] === "object" && data[key] !== null) {
+        travel(prefix === "" ? key : `${prefix}['${key}']`, data[key]);
+      } else {
+        const value = data[key];
+        if (
+          typeof value === "string" &&
+          value.includes("./images/") &&
+          !value.includes("https://")
+        ) {
+          result.push({
+            keyPath: prefix === "" ? key : `${prefix}['${key}']`,
+            filePath: value,
+          });
+        }
+      }
+    }
+  }
+  travel("", infoListData);
+  return result;
+}
 function addWords(index) {
   fs.readFile("./files/add.txt", "utf8", (err, content) => {
     if (err) {
@@ -247,33 +269,27 @@ function addWords(index) {
           .prompt({
             ...confirmPrompt,
             name: "addConfirm",
-            message: `确定向 ${data[index].title} 增加 ${
+            message: `确定向 ${typeListData[index].title} 增加 ${
               str.substr(0, 20) + "..."
             } 等词语?`,
           })
           .then((confirmAnswer) => {
             if (confirmAnswer.addConfirm === true) {
-              savePrevData().then(() => {
-                let indicator = " ";
-                if (str.includes(",")) {
-                  indicator = ",";
-                } else if (str.includes("。")) {
-                  indicator = "。";
+              let indicator = " ";
+              if (str.includes(",")) {
+                indicator = ",";
+              } else if (str.includes("。")) {
+                indicator = "。";
+              }
+              const tempArray = str.split(indicator);
+              tempArray.forEach((v) => {
+                const trimV = v.trim();
+                if (trimV.length > 0) {
+                  addWordToType(index, trimV); // 增加到对应类型
                 }
-                const tempArray = str.split(indicator);
-                tempArray.forEach((v) => {
-                  const trimV = v.trim();
-                  if (trimV.length > 0) {
-                    addWordToType(index, trimV); // 增加到对应类型
-                    if (data[index].isOnly !== true) {
-                      // 如果不是专有词汇, 增加到随机词汇里面去
-                      addWordToType(0, trimV); // 增加到随机类型
-                    }
-                  }
-                });
-                generateFile();
-                wipeUsedFile("./files/add.txt");
               });
+              generateFile();
+              wipeUsedFile("./files/add.txt");
             }
           });
       }
@@ -282,9 +298,9 @@ function addWords(index) {
 }
 
 function deleteWord(word) {
-  data.forEach((v) => {
+  wordListData.forEach((v) => {
     const index = v.words.findIndex(
-      (w) => w.word.toLowerCase().trim() === word.toLowerCase().trim()
+      (w) => w.word.toLowerCase().trim() === word.toLowerCase().trim(),
     );
     if (index !== -1) {
       v.words.splice(index, 1);
@@ -304,18 +320,18 @@ function savePrevData() {
         } else {
           resolve();
         }
-      }
+      },
     );
   });
 }
 
 function addWordToType(index, word) {
   if (
-    data[index].words.findIndex(
-      (w) => w.word.toLowerCase() === word.toLowerCase()
+    wordListData[index].words.findIndex(
+      (w) => w.word.toLowerCase() === word.toLowerCase(),
     ) === -1
   ) {
-    data[index].words.push({
+    wordListData[index].words.push({
       word,
       l: strlen(word),
     });

@@ -1,10 +1,11 @@
 {
   "name": "caici-data",
-  "version": "1.7.1",
+  "version": "1.7.5",
   "release-version": "1.1.8",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "init": "npm install --cpu=x64 --os=darwin",
     "build:dev": "cross-env ENV=dev node ./index.js",
     "build:tips": "cross-env ENV=tips node ./index.js",
     "build": "cross-env ENV=build node ./index.js",
@@ -21,16 +22,21 @@
   },
   "homepage": "https://github.com/iammvp/caici-data#readme",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "fs-extra": "^8.1.0",
+    "glob": "^10.3.10",
     "imagemin": "^7.0.1",
     "imagemin-jpegtran": "^6.0.0",
     "imagemin-pngquant": "^8.0.0",
-    "inquirer": "^7.0.6"
+    "inquirer": "^7.3.3",
+    "lodash.set": "^4.3.2",
+    "lz-string": "^1.5.0",
+    "optional": "^0.1.4",
+    "sharp": "^0.33.2"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "qs": "^6.9.6",
-    "vite": "^2.0.5"
+    "qs": "^6.11.2",
+    "vite": "^2.9.17"
   }
 }
