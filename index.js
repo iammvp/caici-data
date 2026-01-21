@@ -22,9 +22,9 @@ const githubServer = `https://fastly.jsdelivr.net/gh/iammvp/caici-data@latest`;
 const version = "v2";
 for (let i = 0; i < typeListData.length; i++) {
   const info = typeListData[i];
-  console.log(
-    `${info.title}: ${wordListData[i].length} 个词汇, id: ${info.id}`,
-  );
+  // console.log(
+  //   `${info.title}: ${wordListData[i].length} 个词汇, id: ${info.id}`,
+  // );
 }
 
 const firstPrompt = {
@@ -163,9 +163,9 @@ inquirer.prompt(firstPrompt).then((answer) => {
       wordListData.map((d, index) =>
         writeFilePromise(
           `./files/current/${typeListData[index].title}.txt`,
-          getRawWords(d),
-        ),
-      ),
+          getRawWords(d)
+        )
+      )
     ).then((res) => {
       console.log("写入完成");
     });
@@ -176,7 +176,7 @@ inquirer.prompt(firstPrompt).then((answer) => {
       { recursive: true },
       (err) => {
         console.log("done");
-      },
+      }
     );
   }
 });
@@ -198,7 +198,7 @@ function generateFile() {
         if (err) {
           console.log("写入压缩文件失败");
         }
-      },
+      }
     );
     fs.writeFile(
       "./compressData/wordList.txt",
@@ -207,7 +207,7 @@ function generateFile() {
         if (err) {
           console.log("写入压缩文件失败");
         }
-      },
+      }
     );
   });
 }
@@ -300,7 +300,7 @@ function addWords(index) {
 function deleteWord(word) {
   wordListData.forEach((v) => {
     const index = v.words.findIndex(
-      (w) => w.word.toLowerCase().trim() === word.toLowerCase().trim(),
+      (w) => w.word.toLowerCase().trim() === word.toLowerCase().trim()
     );
     if (index !== -1) {
       v.words.splice(index, 1);
@@ -320,7 +320,7 @@ function savePrevData() {
         } else {
           resolve();
         }
-      },
+      }
     );
   });
 }
@@ -328,7 +328,7 @@ function savePrevData() {
 function addWordToType(index, word) {
   if (
     wordListData[index].words.findIndex(
-      (w) => w.word.toLowerCase() === word.toLowerCase(),
+      (w) => w.word.toLowerCase() === word.toLowerCase()
     ) === -1
   ) {
     wordListData[index].words.push({

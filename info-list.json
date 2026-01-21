@@ -1,6 +1,16 @@
 {
   "typeList": [
     {
+      "title": "AI",
+      "id": 0,
+      "image": {
+        "remote": "https://fastly.jsdelivr.net/npm/caici-data@1.7.6/images/webp/ai.webp",
+        "base64": "./images/webp/ai.webp"
+      },
+      "inner-image": "https://fastly.jsdelivr.net/npm/caici-data@1.7.6/images/webp/ai-inner.webp",
+      "background": "#FF8CD8"
+    },
+    {
       "title": "随机",
       "id": 1,
       "image": {
@@ -81,7 +91,7 @@
       "background": "#81EF33"
     }
   ],
-  "sort": [1, 8, 2, 3, 7, 4, 5, 6],
+  "sort": [0, 1, 8, 2, 3, 7, 4, 5, 6],
   "file": {
     "image": {
       "share": "https://fastly.jsdelivr.net/npm/caici-data@1.7.5/images/webp/share.webp",
