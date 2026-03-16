@@ -14,6 +14,24 @@ const sharp = require("sharp");
 const imagemin = require("imagemin");
 const imageminJpegtran = require("imagemin-jpegtran");
 const { default: imageminPngquant } = require("imagemin-pngquant");
+const WEBP_STATIC_OPTIONS = {
+  quality: 60,
+  alphaQuality: 70,
+  effort: 5,
+  smartSubsample: true,
+};
+const WEBP_ANIMATED_OPTIONS = {
+  quality: 68,
+  alphaQuality: 75,
+  effort: 5,
+  smartSubsample: true,
+};
+const IMAGE_EDGE_CROP_FIXES = {
+  "ai-inner": {
+    top: 2,
+    bottom: 2,
+  },
+};
 const data = raw.data;
 const buildEnv = process.env.ENV;
 const localIP = networkInterfaces()["en0"][0]["address"];
@@ -140,17 +158,86 @@ inquirer.prompt(firstPrompt).then((answer) => {
       //       );
       //   }
       // });
-      const promiseArray = globSync("images/min/*.{jpg,png}")
-        .filter((v) => !v.includes("guide"))
+      const promiseArray = globSync("images/min/*.{jpg,png,webp}")
+        .filter((v) => {
+          const ext = path.extname(v).toLowerCase();
+          const isGuide = path.basename(v).includes("guide");
+          return ext === ".webp" || !isGuide;
+        })
         .map((v) => {
           const name = path.basename(v, path.extname(v));
           const filesInfo = {
             from: v,
             to: path.join("images/webp", `${name}.webp`),
           };
-          return sharp(filesInfo.from)
-            .webp({ quality: 10, alphaQuality: 10 })
-            .toFile(filesInfo.to);
+          const inputOptions =
+            path.extname(filesInfo.from).toLowerCase() === ".webp"
+              ? { animated: true }
+              : undefined;
+          const img = inputOptions
+            ? sharp(filesInfo.from, inputOptions)
+            : sharp(filesInfo.from);
+          return img.metadata().then((meta) => {
+            let width = Number(meta.width) || 0;
+            let height = Number(meta.height) || 0;
+            const isAnimatedWebp =
+              meta.format === "webp" && (Number(meta.pages) || 1) > 1;
+            const edgeCrop = IMAGE_EDGE_CROP_FIXES[name];
+            let pipeline = img;
+
+            if (
+              edgeCrop &&
+              !isAnimatedWebp &&
+              width > 0 &&
+              height > edgeCrop.top + edgeCrop.bottom
+            ) {
+              pipeline = pipeline.extract({
+                left: 0,
+                top: edgeCrop.top,
+                width,
+                height: height - edgeCrop.top - edgeCrop.bottom,
+              });
+              height -= edgeCrop.top + edgeCrop.bottom;
+            }
+
+            if (isAnimatedWebp) {
+              if (width > 0) {
+                pipeline = img.resize({
+                  width: Math.max(1, Math.round(width / 2)),
+                });
+              }
+            } else {
+              let scale = 1;
+
+              if (width > 1000 || height > 1000) {
+                scale = 0.5;
+              } else if (
+                (width > 500 && width < 1000) ||
+                (height > 500 && height < 1000)
+              ) {
+                scale = 0.5;
+              }
+
+              pipeline =
+                scale === 1
+                  ? img
+                  : img.resize({
+                      width:
+                        width > 0
+                          ? Math.max(1, Math.round(width * scale))
+                          : undefined,
+                      height:
+                        height > 0
+                          ? Math.max(1, Math.round(height * scale))
+                          : undefined,
+                    });
+            }
+            return pipeline
+              .webp(
+                isAnimatedWebp ? WEBP_ANIMATED_OPTIONS : WEBP_STATIC_OPTIONS,
+              )
+              .toFile(filesInfo.to);
+          });
         });
       Promise.all(promiseArray).then((_) => {
         console.log("压缩完成");
@@ -163,9 +250,9 @@ inquirer.prompt(firstPrompt).then((answer) => {
       wordListData.map((d, index) =>
         writeFilePromise(
           `./files/current/${typeListData[index].title}.txt`,
-          getRawWords(d)
-        )
-      )
+          getRawWords(d),
+        ),
+      ),
     ).then((res) => {
       console.log("写入完成");
     });
@@ -176,7 +263,7 @@ inquirer.prompt(firstPrompt).then((answer) => {
       { recursive: true },
       (err) => {
         console.log("done");
-      }
+      },
     );
   }
 });
@@ -198,7 +285,7 @@ function generateFile() {
         if (err) {
           console.log("写入压缩文件失败");
         }
-      }
+      },
     );
     fs.writeFile(
       "./compressData/wordList.txt",
@@ -207,7 +294,7 @@ function generateFile() {
         if (err) {
           console.log("写入压缩文件失败");
         }
-      }
+      },
     );
   });
 }
@@ -300,7 +387,7 @@ function addWords(index) {
 function deleteWord(word) {
   wordListData.forEach((v) => {
     const index = v.words.findIndex(
-      (w) => w.word.toLowerCase().trim() === word.toLowerCase().trim()
+      (w) => w.word.toLowerCase().trim() === word.toLowerCase().trim(),
     );
     if (index !== -1) {
       v.words.splice(index, 1);
@@ -320,7 +407,7 @@ function savePrevData() {
         } else {
           resolve();
         }
-      }
+      },
     );
   });
 }
@@ -328,7 +415,7 @@ function savePrevData() {
 function addWordToType(index, word) {
   if (
     wordListData[index].words.findIndex(
-      (w) => w.word.toLowerCase() === word.toLowerCase()
+      (w) => w.word.toLowerCase() === word.toLowerCase(),
     ) === -1
   ) {
     wordListData[index].words.push({

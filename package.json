@@ -9,7 +9,10 @@
     "build:dev": "cross-env ENV=dev node ./index.js",
     "build:tips": "cross-env ENV=tips node ./index.js",
     "build": "cross-env ENV=build node ./index.js",
-    "dev": "vite"
+    "dev": "vite",
+    "admin:dev": "vite --config admin-console/vite.config.js",
+    "admin:build": "vite build --config admin-console/vite.config.js",
+    "admin:preview": "vite preview --config admin-console/vite.config.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +25,7 @@
   },
   "homepage": "https://github.com/iammvp/caici-data#readme",
   "dependencies": {
+    "@cloudbase/js-sdk": "^2.26.3",
     "axios": "^0.21.4",
     "fs-extra": "^8.1.0",
     "glob": "^10.3.10",

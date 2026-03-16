@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>猜词云开发管理后台</title>
+    
+    <script type="module" crossorigin src="/assets/index.6064ccff.js"></script>
+    <link rel="stylesheet" href="/assets/index.938ebff2.css">
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar panel">
+        <div>
+          <h1>猜词云开发管理后台</h1>
+          <p class="subtitle">管理 category_list 与 words 两个集合</p>
+        </div>
+        <div class="auth-actions">
+          <div id="authState" class="status-chip">未连接</div>
+          <button id="btnConnect" class="btn">连接云开发</button>
+          <button id="btnPasswordLogin" class="btn">账号密码登录</button>
+          <button id="btnWechatLogin" class="btn" disabled>微信扫码登录</button>
+          <button id="btnLogout" class="btn" disabled>退出登录</button>
+        </div>
+      </header>
+
+      <section class="panel">
+        <h2>环境配置</h2>
+        <div class="form-grid cols-4">
+          <label>
+            <span>Env ID *</span>
+            <input id="cfgEnvId" type="text" placeholder="caici-2g1d6quzcef85d05" />
+          </label>
+          <label>
+            <span>Client ID（不知道可先留空）</span>
+            <input id="cfgClientId" type="text" placeholder="只在 Web 鉴权/微信扫码登录时需要" />
+          </label>
+          <label>
+            <span>Region</span>
+            <input id="cfgRegion" type="text" value="ap-shanghai" />
+          </label>
+          <label>
+            <span>微信 Provider ID（默认别改）</span>
+            <input id="cfgProviderId" type="text" value="wx_open" placeholder="通常就是 wx_open" />
+          </label>
+          <label>
+            <span>图片上传路径（固定）</span>
+            <input id="cfgStoragePrefix" type="text" value="images" readonly />
+          </label>
+          <label>
+            <span>鉴权模式</span>
+            <select id="cfgAuthMode">
+              <option value="optional">先不强制登录</option>
+              <option value="required" selected>必须登录后操作</option>
+            </select>
+          </label>
+          <label>
+            <span>自动匿名登录</span>
+            <select id="cfgAutoAnonymous">
+              <option value="true">开启</option>
+              <option value="false" selected>关闭</option>
+            </select>
+          </label>
+          <label>
+            <span>备注</span>
+            <input id="cfgNote" type="text" placeholder="可留空，用于记录环境" />
+          </label>
+        </div>
+        <div class="inline-actions">
+          <button id="btnSaveConfig" class="btn">保存配置</button>
+          <button id="btnLoadData" class="btn" disabled>加载数据</button>
+        </div>
+        <p class="hint">
+          配置会保存到当前浏览器 localStorage。当前默认是“必须登录后操作”，保存、删除、批量导入都要先登录。
+        </p>
+        <p class="hint">
+          推荐登录顺序（不用 Client ID）：在云开发“身份认证 -> 用户管理”先建一个用户名密码账户；回到后台点“连接云开发”后，点“账号密码登录”。
+        </p>
+        <p class="hint">
+          微信扫码登录属于可选方案，通常需要 Client ID 和回调白名单；如果你现在拿不到 Client ID，先用账号密码登录即可。
+        </p>
+      </section>
+
+      <nav class="tab-nav panel">
+        <button id="tabBtnCategories" class="tab-btn active" data-tab="categories">分类管理 category_list</button>
+        <button id="tabBtnWords" class="tab-btn" data-tab="words">词语管理 words</button>
+      </nav>
+
+      <main>
+        <section id="tabCategories" class="tab-panel active">
+          <div class="split-layout">
+            <aside class="panel">
+              <h2>已存在分类</h2>
+              <label>
+                <span>按 title 选择</span>
+                <select id="categoryPicker">
+                  <option value="">请选择</option>
+                </select>
+              </label>
+              <div id="categorySummary" class="summary"></div>
+              <div class="inline-actions">
+                <button id="btnNewCategory" class="btn">新建模式</button>
+                <button id="btnDeleteCategory" class="btn danger" disabled>删除分类</button>
+              </div>
+            </aside>
+
+            <section class="panel">
+              <h2>分类编辑</h2>
+              <form id="categoryForm" novalidate>
+                <div class="form-grid cols-3">
+                  <label>
+                    <span>_id（自动）</span>
+                    <input id="catDocId" type="text" readonly placeholder="type_数字" />
+                  </label>
+                  <label>
+                    <span>id *（数字且唯一）</span>
+                    <input id="catId" type="number" step="1" required />
+                  </label>
+                  <label>
+                    <span>title *（唯一）</span>
+                    <input id="catTitle" type="text" required />
+                  </label>
+
+                  <label>
+                    <span>background *（Hex）</span>
+                    <input id="catBackground" type="text" placeholder="#FF8CD8" required />
+                  </label>
+                  <label>
+                    <span>颜色选择</span>
+                    <input id="catBackgroundColor" type="color" value="#ff8cd8" />
+                  </label>
+                  <label>
+                    <span>order（默认 999）</span>
+                    <input id="catOrder" type="number" step="1" value="999" />
+                  </label>
+
+                  <label>
+                    <span>status</span>
+                    <select id="catStatus">
+                      <option value="inactive" selected>inactive</option>
+                      <option value="active">active</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>tag（默认空）</span>
+                    <input id="catTag" type="text" />
+                  </label>
+                </div>
+
+                <div class="upload-grid">
+                  <div class="upload-card">
+                    <h3>image *（强制 626 x 942）</h3>
+                    <input id="catImageFile" type="file" accept="image/*" />
+                    <p class="hint">上传前会自动裁剪并转换为 webp 压缩图，数据库只保存文件名</p>
+                    <div class="preview-wrap">
+                      <img id="catImagePreview" alt="image 预览" />
+                    </div>
+                  </div>
+                  <div class="upload-card">
+                    <h3>inner-image *（强制 600 x 700）</h3>
+                    <input id="catInnerImageFile" type="file" accept="image/*" />
+                    <p class="hint">上传前会自动裁剪并转换为 webp 压缩图，数据库只保存文件名</p>
+                    <div class="preview-wrap">
+                      <img id="catInnerImagePreview" alt="inner-image 预览" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="inline-actions">
+                  <button id="btnSaveCategory" class="btn primary" type="submit">保存分类（新增/更新）</button>
+                </div>
+              </form>
+            </section>
+          </div>
+        </section>
+
+        <section id="tabWords" class="tab-panel">
+          <div class="split-layout">
+            <aside class="panel">
+              <h2>检索词语</h2>
+              <label>
+                <span>关键词</span>
+                <input id="wordSearchKeyword" type="text" placeholder="输入词语关键字" />
+              </label>
+              <label>
+                <span>按分类筛选</span>
+                <select id="wordSearchCategory">
+                  <option value="">全部分类</option>
+                </select>
+              </label>
+              <div class="inline-actions">
+                <button id="btnSearchWord" class="btn">搜索</button>
+                <button id="btnResetWordSearch" class="btn">重置</button>
+              </div>
+              <p class="hint" id="wordSearchStats">请先输入关键词或选择分类后搜索</p>
+
+              <div class="word-list" id="wordList"></div>
+            </aside>
+
+            <section class="panel">
+              <h2>词语编辑</h2>
+              <form id="wordForm" novalidate>
+                <div class="form-grid cols-2">
+                  <label>
+                    <span>_id（自动）</span>
+                    <input id="wordDocId" type="text" readonly />
+                  </label>
+                  <label>
+                    <span>category_id *（数字）</span>
+                    <select id="wordCategoryId" required>
+                      <option value="">请选择</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>联动 title</span>
+                    <input id="wordCategoryTitle" type="text" readonly placeholder="自动展示" />
+                  </label>
+                  <label>
+                    <span>status</span>
+                    <select id="wordStatus">
+                      <option value="active" selected>active</option>
+                      <option value="inactive">inactive</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>v</span>
+                    <input id="wordV" type="number" step="1" value="1" />
+                  </label>
+                  <label>
+                    <span>word *</span>
+                    <input id="wordText" type="text" required />
+                  </label>
+                </div>
+                <div class="inline-actions">
+                  <button id="btnSaveWord" class="btn primary" type="submit">保存词语（新增/更新）</button>
+                  <button id="btnNewWord" class="btn" type="button">新建模式</button>
+                  <button id="btnDeleteWord" class="btn danger" type="button" disabled>删除词语</button>
+                </div>
+              </form>
+
+              <hr />
+
+              <h2>批量导入词语</h2>
+              <div class="form-grid cols-3">
+                <label>
+                  <span>category_id *</span>
+                  <select id="batchCategoryId" required>
+                    <option value="">请选择</option>
+                  </select>
+                </label>
+                <label>
+                  <span>status</span>
+                  <select id="batchStatus">
+                    <option value="active" selected>active</option>
+                    <option value="inactive">inactive</option>
+                  </select>
+                </label>
+                <label>
+                  <span>v</span>
+                  <input id="batchV" type="number" step="1" value="1" />
+                </label>
+              </div>
+              <label>
+                <span>词语列表（textarea，使用英文逗号 , 分隔）</span>
+                <textarea
+                  id="batchWordsText"
+                  rows="8"
+                  placeholder="例如：狮子, 老虎, 大象"
+                ></textarea>
+              </label>
+              <div class="inline-actions">
+                <button id="btnBatchImport" class="btn primary" type="button">批量导入</button>
+              </div>
+              <p class="hint" id="batchImportResult">待导入</p>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    
+  </body>
+</html>
