@@ -3,13 +3,16 @@ import cloudbase from "@cloudbase/js-sdk";
 const STORAGE_KEY = "caici-admin-config-v1";
 const CATEGORY_COLLECTION = "category_list";
 const WORD_COLLECTION = "words";
+const WORD_JSON_STORAGE_PREFIX = "words";
 const MAX_QUERY_ROWS = 500;
 const CATEGORY_IMAGE_SIZE = { width: 626, height: 942 };
 const CATEGORY_INNER_IMAGE_SIZE = { width: 600, height: 700 };
 const DEFAULT_STORAGE_PREFIX = "images";
 const DEFAULT_IMAGE_BASE_URL =
   "https://6361-caici-2g1d6quzcef85d05-1301791303.tcb.qcloud.la/images";
-const DEFAULT_STORAGE_BUCKET_ID = extractBucketIdFromPublicUrl(DEFAULT_IMAGE_BASE_URL);
+const DEFAULT_STORAGE_BUCKET_ID = extractBucketIdFromPublicUrl(
+  DEFAULT_IMAGE_BASE_URL,
+);
 
 const state = {
   config: {
@@ -99,6 +102,7 @@ function cacheElements() {
     "wordV",
     "wordText",
     "btnSaveWord",
+    "btnSyncWordJson",
     "btnNewWord",
     "btnDeleteWord",
     "batchCategoryId",
@@ -129,7 +133,9 @@ function bindEvents() {
   el.catId.addEventListener("input", updateCategoryDocIdPreview);
   el.catBackground.addEventListener("input", syncBackgroundTextToColor);
   el.catBackgroundColor.addEventListener("input", syncBackgroundColorToText);
-  el.catImageFile.addEventListener("change", () => previewLocalCategoryImage("image"));
+  el.catImageFile.addEventListener("change", () =>
+    previewLocalCategoryImage("image"),
+  );
   el.catInnerImageFile.addEventListener("change", () =>
     previewLocalCategoryImage("inner-image"),
   );
@@ -149,6 +155,7 @@ function bindEvents() {
   el.wordCategoryId.addEventListener("change", syncWordCategoryTitle);
   el.btnNewWord.addEventListener("click", () => resetWordForm());
   el.btnDeleteWord.addEventListener("click", onDeleteWord);
+  el.btnSyncWordJson.addEventListener("click", onSyncWordJson);
   el.wordForm.addEventListener("submit", onSaveWord);
   el.btnBatchImport.addEventListener("click", onBatchImportWords);
 }
@@ -180,7 +187,8 @@ function writeConfigToForm(config) {
   el.cfgRegion.value = config.region || "ap-shanghai";
   el.cfgProviderId.value = config.providerId || "wx_open";
   el.cfgStoragePrefix.value = DEFAULT_STORAGE_PREFIX;
-  el.cfgAuthMode.value = config.authMode === "optional" ? "optional" : "required";
+  el.cfgAuthMode.value =
+    config.authMode === "optional" ? "optional" : "required";
   el.cfgAutoAnonymous.value = String(Boolean(config.autoAnonymous));
   el.cfgNote.value = config.note || "";
 }
@@ -193,7 +201,8 @@ function loadConfigToForm() {
       return;
     }
     const saved = JSON.parse(raw);
-    const savedAuthMode = saved.authMode === "optional" ? "required" : saved.authMode;
+    const savedAuthMode =
+      saved.authMode === "optional" ? "required" : saved.authMode;
     const savedAutoAnonymous =
       typeof saved.autoAnonymous === "boolean"
         ? saved.autoAnonymous
@@ -288,7 +297,10 @@ async function onConnect() {
 
     updateOperateButtons();
     if (config.authMode === "required" && !isLoggedIn()) {
-      toast("云开发已连接，请先“账号密码登录”或“微信扫码登录”后再进行增删改查", "info");
+      toast(
+        "云开发已连接，请先“账号密码登录”或“微信扫码登录”后再进行增删改查",
+        "info",
+      );
     } else {
       toast("云开发连接成功", "success");
     }
@@ -303,7 +315,11 @@ async function completeWechatAuthCallback() {
   const providerCode = params.get("code");
   const callbackState = params.get("state");
 
-  if (!providerCode || !callbackState || !callbackState.startsWith("caici_admin_wx_")) {
+  if (
+    !providerCode ||
+    !callbackState ||
+    !callbackState.startsWith("caici_admin_wx_")
+  ) {
     return;
   }
 
@@ -345,7 +361,8 @@ async function refreshLoginState() {
 
   if (isLoggedIn()) {
     const user = getCurrentUser();
-    const name = user?.name || user?.username || user?.uid || user?.sub || "已登录用户";
+    const name =
+      user?.name || user?.username || user?.uid || user?.sub || "已登录用户";
     setAuthStateText(`已登录: ${name}`);
   } else if (state.config.authMode === "required") {
     setAuthStateText(
@@ -394,7 +411,9 @@ function updateOperateButtons() {
   const canOperate =
     connected && (state.config.authMode === "optional" || isLoggedIn());
   const canWechatLogin =
-    connected && Boolean(state.config.clientId) && Boolean(state.config.providerId);
+    connected &&
+    Boolean(state.config.clientId) &&
+    Boolean(state.config.providerId);
   const canPasswordLogin = !isLoggedIn();
 
   el.btnPasswordLogin.disabled = !canPasswordLogin;
@@ -407,6 +426,8 @@ function updateOperateButtons() {
 
   el.btnSearchWord.disabled = !canOperate;
   el.btnSaveWord.disabled = !canOperate;
+  el.btnSyncWordJson.disabled =
+    !canOperate || !canSyncWordsJsonForCategory(Number.parseInt(el.wordCategoryId.value, 10));
   el.btnDeleteWord.disabled = !canOperate || !state.currentWordId;
   el.btnBatchImport.disabled = !canOperate;
 }
@@ -488,7 +509,9 @@ async function onPasswordLogin() {
 
     const signInRes = await state.auth.signInWithPassword(payload);
     if (signInRes?.error) {
-      throw new Error(signInRes.error.message || signInRes.error.code || "账号登录失败");
+      throw new Error(
+        signInRes.error.message || signInRes.error.code || "账号登录失败",
+      );
     }
 
     await refreshLoginState();
@@ -580,7 +603,12 @@ function renderCategoryOptionsForWordForms() {
 
   fillSelect(el.wordCategoryId, options, "请选择", el.wordCategoryId.value);
   fillSelect(el.batchCategoryId, options, "请选择", el.batchCategoryId.value);
-  fillSelect(el.wordSearchCategory, options, "全部分类", el.wordSearchCategory.value);
+  fillSelect(
+    el.wordSearchCategory,
+    options,
+    "全部分类",
+    el.wordSearchCategory.value,
+  );
 
   syncWordCategoryTitle();
 }
@@ -628,7 +656,9 @@ async function fillCategoryForm(category) {
   state.currentCategoryId = category._id;
 
   el.catDocId.value = category._id || "";
-  el.catId.value = Number.isFinite(Number(category.id)) ? String(category.id) : "";
+  el.catId.value = Number.isFinite(Number(category.id))
+    ? String(category.id)
+    : "";
   el.catTitle.value = category.title || "";
   el.catBackground.value = category.background || "";
   el.catOrder.value = Number.isFinite(Number(category.order))
@@ -748,7 +778,11 @@ async function previewLocalCategoryImage(fieldName) {
       return;
     }
 
-    const blob = await processImageToWebp(file, targetSize.width, targetSize.height);
+    const blob = await processImageToWebp(
+      file,
+      targetSize.width,
+      targetSize.height,
+    );
     const url = URL.createObjectURL(blob);
     setPreviewSrc(previewElement, url);
     previewElement.dataset.localBlobUrl = url;
@@ -848,7 +882,10 @@ async function onSaveCategory(event) {
           CATEGORY_INNER_IMAGE_SIZE.width,
           CATEGORY_INNER_IMAGE_SIZE.height,
         );
-        innerImageValue = await uploadCategoryImage(processedInnerImage, form.innerImageFile);
+        innerImageValue = await uploadCategoryImage(
+          processedInnerImage,
+          form.innerImageFile,
+        );
       } catch (error) {
         throw new Error(`inner-image 上传失败: ${formatError(error)}`);
       }
@@ -877,7 +914,10 @@ async function onSaveCategory(event) {
     } else {
       const currentDocId = currentCategory._id;
 
-      if (form.imageFile && shouldDeleteReplacedStorageValue(currentCategory.image, imageValue)) {
+      if (
+        form.imageFile &&
+        shouldDeleteReplacedStorageValue(currentCategory.image, imageValue)
+      ) {
         oldImageCandidates.push(currentCategory.image);
       }
       if (
@@ -936,14 +976,31 @@ async function onSaveCategory(event) {
     }
 
     await loadCategories();
-    const savedCategory = state.categories.find((item) => item._id === targetDocId);
+    const savedCategory = state.categories.find(
+      (item) => item._id === targetDocId,
+    );
     if (savedCategory) {
       el.categoryPicker.value = savedCategory._id;
       await fillCategoryForm(savedCategory);
     }
 
     await refreshWordResultsIfSearched();
-    toast("分类保存成功", "success");
+
+    let wordsJsonSyncError = null;
+    if (currentCategory && currentCategory.id !== form.id) {
+      try {
+        await syncWordsJsonByCategoryId(form.id);
+        await removeWordsJsonFile(currentCategory.id);
+      } catch (error) {
+        wordsJsonSyncError = error;
+      }
+    }
+
+    if (wordsJsonSyncError) {
+      toast(`分类已保存，但词类型 JSON 同步失败: ${formatError(wordsJsonSyncError)}`, "error");
+    } else {
+      toast("分类保存成功", "success");
+    }
   } catch (error) {
     toast(`分类保存失败: ${formatError(error)}`, "error");
   }
@@ -1001,9 +1058,10 @@ async function onDeleteCategory() {
       allowZero: false,
     });
 
-    const filesToDelete = [currentCategory.image, currentCategory["inner-image"]].filter(
-      (item) => canDeleteStorageValue(item),
-    );
+    const filesToDelete = [
+      currentCategory.image,
+      currentCategory["inner-image"],
+    ].filter((item) => canDeleteStorageValue(item));
     if (filesToDelete.length > 0) {
       await removeStorageFiles(filesToDelete);
     }
@@ -1011,7 +1069,17 @@ async function onDeleteCategory() {
     resetCategoryForm();
     await loadCategories();
     await refreshWordResultsIfSearched();
-    toast("分类已删除", "success");
+      let wordsJsonRemoveError = null;
+      try {
+        await removeWordsJsonFile(currentCategory.id);
+      } catch (error) {
+        wordsJsonRemoveError = error;
+      }
+      if (wordsJsonRemoveError) {
+        toast(`分类已删除，但词类型 JSON 删除失败: ${formatError(wordsJsonRemoveError)}`, "error");
+      } else {
+        toast("分类已删除", "success");
+      }
   } catch (error) {
     toast(`删除分类失败: ${formatError(error)}`, "error");
   }
@@ -1027,7 +1095,10 @@ async function queryAll(collectionName, where = {}, options = {}) {
     let query = state.db.collection(collectionName).where(where);
 
     if (options.orderByField) {
-      query = query.orderBy(options.orderByField, options.orderByOrder || "asc");
+      query = query.orderBy(
+        options.orderByField,
+        options.orderByOrder || "asc",
+      );
     }
 
     const res = await query.skip(skip).limit(pageSize).get();
@@ -1070,12 +1141,16 @@ async function searchWords(options = {}) {
       if (hasCategoryFilter) {
         where.category_id = categoryFilter;
       }
-      result = await queryAll(WORD_COLLECTION, where, { maxRows: MAX_QUERY_ROWS });
+      result = await queryAll(WORD_COLLECTION, where, {
+        maxRows: MAX_QUERY_ROWS,
+      });
     } catch (error) {
       const fallbackWhere = hasCategoryFilter
         ? { category_id: categoryFilter }
         : {};
-      result = await queryAll(WORD_COLLECTION, fallbackWhere, { maxRows: MAX_QUERY_ROWS });
+      result = await queryAll(WORD_COLLECTION, fallbackWhere, {
+        maxRows: MAX_QUERY_ROWS,
+      });
       result = result.filter((item) =>
         String(item.word || "")
           .toLowerCase()
@@ -1084,10 +1159,10 @@ async function searchWords(options = {}) {
       toast("当前环境不支持正则检索，已切换本地过滤", "error");
     }
   } else {
-    const where = hasCategoryFilter
-      ? { category_id: categoryFilter }
-      : {};
-    result = await queryAll(WORD_COLLECTION, where, { maxRows: MAX_QUERY_ROWS });
+    const where = hasCategoryFilter ? { category_id: categoryFilter } : {};
+    result = await queryAll(WORD_COLLECTION, where, {
+      maxRows: MAX_QUERY_ROWS,
+    });
   }
 
   result.sort((a, b) => {
@@ -1180,8 +1255,28 @@ function renderWordList() {
 }
 
 function getCategoryTitleById(categoryId) {
-  const item = state.categories.find((category) => category.id === Number(categoryId));
+  const item = state.categories.find(
+    (category) => category.id === Number(categoryId),
+  );
   return item ? item.title : "";
+}
+
+function getCategoryById(categoryId) {
+  return state.categories.find((category) => category.id === Number(categoryId)) || null;
+}
+
+function canSyncWordsJsonForCategory(categoryId) {
+  if (!Number.isInteger(Number(categoryId))) {
+    return false;
+  }
+
+  const category = getCategoryById(categoryId);
+  if (!category) {
+    return false;
+  }
+
+  const normalizedTitle = String(category.title || "").trim().toLowerCase();
+  return normalizedTitle !== "随机" && normalizedTitle !== "ai";
 }
 
 function fillWordForm(item) {
@@ -1189,7 +1284,9 @@ function fillWordForm(item) {
   el.wordDocId.value = item._id || "";
   el.wordCategoryId.value = String(item.category_id || "");
   el.wordStatus.value = item.status === "inactive" ? "inactive" : "active";
-  el.wordV.value = Number.isInteger(Number(item.v)) ? String(Number(item.v)) : "1";
+  el.wordV.value = Number.isInteger(Number(item.v))
+    ? String(Number(item.v))
+    : "1";
   el.wordText.value = item.word || "";
 
   syncWordCategoryTitle();
@@ -1214,10 +1311,110 @@ function syncWordCategoryTitle() {
   const categoryId = Number.parseInt(el.wordCategoryId.value, 10);
   if (!Number.isInteger(categoryId)) {
     el.wordCategoryTitle.value = "";
+    updateOperateButtons();
     return;
   }
 
   el.wordCategoryTitle.value = getCategoryTitleById(categoryId) || "";
+  updateOperateButtons();
+}
+
+function getWordJsonStoragePath(categoryId) {
+  return `${WORD_JSON_STORAGE_PREFIX}/${Number(categoryId)}.json`;
+}
+
+async function buildWordsJsonBlob(categoryId) {
+  const words = await queryAll(
+    WORD_COLLECTION,
+    { category_id: Number(categoryId) },
+    { maxRows: MAX_QUERY_ROWS },
+  );
+
+  words.sort((a, b) => {
+    const wordA = String(a.word || "");
+    const wordB = String(b.word || "");
+    return wordA.localeCompare(wordB, "zh-CN");
+  });
+
+  const records = words.map((item) => ({
+    status: item.status === "inactive" ? "inactive" : "active",
+    v: Number.isInteger(Number(item.v)) ? Number(item.v) : 1,
+    word: String(item.word || ""),
+    l: Number.isInteger(Number(item.l)) ? Number(item.l) : calcWordLength(item.word || ""),
+  }));
+
+  return {
+    count: records.length,
+    blob: new Blob([JSON.stringify(records)], {
+      type: "application/json;charset=utf-8",
+    }),
+  };
+}
+
+async function uploadStorageObject(path, body, label) {
+  const postAttempt = await tryUploadWithPost(path, body);
+  if (!postAttempt.ok) {
+    const putAttempt = await tryUploadWithPut(path, body);
+    if (!putAttempt.ok) {
+      const postError = postAttempt.errorText || "未知错误";
+      const putError = putAttempt.errorText || "未知错误";
+      const currentOrigin = window.location.origin || "当前后台域名";
+      throw new Error(
+        `${label}上传失败（post: ${postError} | put: ${putError}）。若网络面板出现 preflight 403，请在腾讯云 COS 跨域配置里放行当前后台域名（例如 ${currentOrigin}）。`,
+      );
+    }
+  }
+}
+
+async function syncWordsJsonByCategoryId(categoryId) {
+  if (!Number.isInteger(Number(categoryId))) {
+    throw new Error("category_id 无效，无法同步词语 JSON");
+  }
+
+  const safeCategoryId = Number(categoryId);
+  const { count, blob } = await buildWordsJsonBlob(safeCategoryId);
+  const path = getWordJsonStoragePath(safeCategoryId);
+  await uploadStorageObject(path, blob, `词类型 ${safeCategoryId} JSON`);
+
+  return { categoryId: safeCategoryId, count, fileName: `${safeCategoryId}.json` };
+}
+
+async function syncWordsJsonForCategoryIds(categoryIds) {
+  const uniqueIds = [...new Set(categoryIds.map((item) => Number(item)).filter(Number.isInteger))];
+  const results = [];
+
+  for (const categoryId of uniqueIds) {
+    results.push(await syncWordsJsonByCategoryId(categoryId));
+  }
+
+  return results;
+}
+
+async function removeWordsJsonFile(categoryId) {
+  if (!Number.isInteger(Number(categoryId))) {
+    return;
+  }
+  await removeStorageFiles([getWordJsonStoragePath(Number(categoryId))]);
+}
+
+async function onSyncWordJson() {
+  try {
+    ensureCanOperate();
+
+    const categoryId = Number.parseInt(el.wordCategoryId.value, 10);
+    if (!Number.isInteger(categoryId)) {
+      throw new Error("请先选择词类型");
+    }
+
+    if (!canSyncWordsJsonForCategory(categoryId)) {
+      throw new Error("随机和 AI 类型没有词，不能生成 JSON");
+    }
+
+    const result = await syncWordsJsonByCategoryId(categoryId);
+    toast(`词类型 ${result.categoryId} JSON 已上传到 words/${result.fileName}（${result.count} 条）`, "success");
+  } catch (error) {
+    toast(`词类型 JSON 同步失败: ${formatError(error)}`, "error");
+  }
 }
 
 function calcWordLength(word) {
@@ -1258,9 +1455,11 @@ async function onSaveWord(event) {
   try {
     ensureCanOperate();
 
+    const currentWord = state.words.find((item) => item._id === state.currentWordId) || null;
     const form = collectWordForm();
     validateWordForm(form);
     let successText = "";
+    const syncCategoryIds = new Set([form.category_id]);
 
     if (form._id) {
       const dup = await state.db
@@ -1273,17 +1472,28 @@ async function onSaveWord(event) {
         throw new Error("同一分类下该词语已存在");
       }
 
-      const updateRes = await state.db.collection(WORD_COLLECTION).doc(form._id).update({
-        category_id: form.category_id,
-        status: form.status,
-        v: form.v,
-        word: form.word,
-        l: calcWordLength(form.word),
-      });
+      const updateRes = await state.db
+        .collection(WORD_COLLECTION)
+        .doc(form._id)
+        .update({
+          category_id: form.category_id,
+          status: form.status,
+          v: form.v,
+          word: form.word,
+          l: calcWordLength(form.word),
+        });
       assertDbResultOk(updateRes, "更新词语", {
         expectField: "updated",
         allowZero: true,
       });
+
+      if (
+        currentWord &&
+        Number.isInteger(Number(currentWord.category_id)) &&
+        Number(currentWord.category_id) !== form.category_id
+      ) {
+        syncCategoryIds.add(Number(currentWord.category_id));
+      }
 
       state.currentWordId = form._id;
       successText = "词语更新成功";
@@ -1310,16 +1520,27 @@ async function onSaveWord(event) {
       successText = "词语新增成功";
     }
 
+    let syncError = null;
+    try {
+      await syncWordsJsonForCategoryIds([...syncCategoryIds]);
+    } catch (error) {
+      syncError = error;
+    }
+
     await refreshWordResultsIfSearched();
 
     if (state.currentWordId) {
-      const current = state.words.find((item) => item._id === state.currentWordId);
+      const current = state.words.find(
+        (item) => item._id === state.currentWordId,
+      );
       if (current) {
         fillWordForm(current);
       }
     }
 
-    if (successText) {
+    if (syncError) {
+      toast(`词语已保存，但词类型 JSON 同步失败: ${formatError(syncError)}`, "error");
+    } else if (successText) {
       toast(successText, "success");
     }
   } catch (error) {
@@ -1343,14 +1564,27 @@ async function onDeleteWord() {
       return;
     }
 
-    const removeRes = await state.db.collection(WORD_COLLECTION).doc(state.currentWordId).remove();
+    const removeRes = await state.db
+      .collection(WORD_COLLECTION)
+      .doc(state.currentWordId)
+      .remove();
     assertDbResultOk(removeRes, "删除词语", {
       expectField: "deleted",
       allowZero: false,
     });
+    let syncError = null;
+    try {
+      await syncWordsJsonByCategoryId(target?.category_id);
+    } catch (error) {
+      syncError = error;
+    }
     resetWordForm();
     await refreshWordResultsIfSearched();
-    toast("词语已删除", "success");
+    if (syncError) {
+      toast(`词语已删除，但词类型 JSON 同步失败: ${formatError(syncError)}`, "error");
+    } else {
+      toast("词语已删除", "success");
+    }
   } catch (error) {
     toast(`删除词语失败: ${formatError(error)}`, "error");
   }
@@ -1382,7 +1616,9 @@ async function onBatchImportWords() {
       { maxRows: MAX_QUERY_ROWS },
     );
 
-    const existingSet = new Set(existingWords.map((item) => String(item.word || "").trim()));
+    const existingSet = new Set(
+      existingWords.map((item) => String(item.word || "").trim()),
+    );
     const toInsert = words.filter((item) => !existingSet.has(item));
 
     if (toInsert.length === 0) {
@@ -1422,8 +1658,19 @@ async function onBatchImportWords() {
     const skipped = words.length - toInsert.length;
     el.batchImportResult.textContent = `输入 ${words.length} 个，成功 ${inserted}，失败 ${failed}，跳过重复 ${skipped}`;
 
+    let syncError = null;
+    if (inserted > 0) {
+      try {
+        await syncWordsJsonByCategoryId(categoryId);
+      } catch (error) {
+        syncError = error;
+      }
+    }
+
     await refreshWordResultsIfSearched();
-    if (failed > 0) {
+    if (syncError) {
+      toast(`批量导入已完成，但词类型 JSON 同步失败: ${formatError(syncError)}`, "error");
+    } else if (failed > 0) {
       toast(`批量导入部分失败（失败 ${failed}）`, "error");
     } else {
       toast("批量导入完成", "success");
@@ -1442,7 +1689,11 @@ function assertDbResultOk(result, actionLabel, options = {}) {
   const message = String(result.message || "").trim();
   const signal = `${code} ${message}`.trim();
 
-  if (/DATABASE_PERMISSION_DENIED|permission denied|permission_denied/i.test(signal)) {
+  if (
+    /DATABASE_PERMISSION_DENIED|permission denied|permission_denied/i.test(
+      signal,
+    )
+  ) {
     throw new Error(message || code || `${actionLabel}失败：没有权限`);
   }
 
@@ -1491,7 +1742,8 @@ async function processImageToWebp(file, targetWidth, targetHeight) {
   let quality = 0.86;
   let blob = await canvasToWebpBlob(canvas, quality);
 
-  const maxBytes = targetWidth * targetHeight > 500000 ? 420 * 1024 : 320 * 1024;
+  const maxBytes =
+    targetWidth * targetHeight > 500000 ? 420 * 1024 : 320 * 1024;
   while (blob.size > maxBytes && quality > 0.58) {
     quality -= 0.07;
     blob = await canvasToWebpBlob(canvas, quality);
@@ -1583,18 +1835,7 @@ async function uploadCategoryImage(blob, originalFile) {
   const fileName = `${stem}.webp`;
   const path = `${normalizeStoragePrefix(state.config.storagePrefix)}/${fileName}`;
 
-  const postAttempt = await tryUploadWithPost(path, blob);
-  if (!postAttempt.ok) {
-    const putAttempt = await tryUploadWithPut(path, blob);
-    if (!putAttempt.ok) {
-      const postError = postAttempt.errorText || "未知错误";
-      const putError = putAttempt.errorText || "未知错误";
-      const currentOrigin = window.location.origin || "当前后台域名";
-      throw new Error(
-        `上传失败（post: ${postError} | put: ${putError}）。若网络面板出现 preflight 403，请在腾讯云 COS 跨域配置里放行当前后台域名（例如 ${currentOrigin}）。`,
-      );
-    }
-  }
+  await uploadStorageObject(path, blob, "图片");
 
   return fileName;
 }
@@ -1656,7 +1897,11 @@ function extractStorageErrorText(error) {
 }
 
 async function removeStorageFiles(fileIds) {
-  const targets = [...new Set(fileIds.map((item) => toStorageDeleteTarget(item)).filter(Boolean))];
+  const targets = [
+    ...new Set(
+      fileIds.map((item) => toStorageDeleteTarget(item)).filter(Boolean),
+    ),
+  ];
 
   if (targets.length === 0) {
     return;
@@ -1755,7 +2000,9 @@ function toStorageDeleteTarget(value) {
   if (/^https?:\/\//i.test(raw)) {
     try {
       const url = new URL(raw);
-      const name = decodeURIComponent(url.pathname.split("/").pop() || "").trim();
+      const name = decodeURIComponent(
+        url.pathname.split("/").pop() || "",
+      ).trim();
       if (!name) {
         return "";
       }
@@ -1851,7 +2098,9 @@ function formatError(error) {
           .filter(Boolean)
           .join(" | ");
 
-  if (/DATABASE_PERMISSION_DENIED|permission denied|permission_denied/i.test(text)) {
+  if (
+    /DATABASE_PERMISSION_DENIED|permission denied|permission_denied/i.test(text)
+  ) {
     return "没有数据库写权限。你已登录也可能因为角色权限不足：请到云开发控制台 -> 身份认证 -> 权限控制，确认当前账号有写权限；再到数据库 -> 集合权限，给 category_list 和 words 配置可写规则。";
   }
 
